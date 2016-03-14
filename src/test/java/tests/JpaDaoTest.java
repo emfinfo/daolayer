@@ -42,7 +42,7 @@ public class JpaDaoTest {
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
 
   private static final boolean IMPORT_DB = false; // importer la DB depuis le fichier csv (env. 2 minutes)
-  private static final boolean SHOW_LIST = false; // voir un extrait des listes extraites
+  private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
   private static final int LIST_MAXSIZE = 4; // le maximum d'entrées affichées pour les longues listes
 
   private static DbWorkerAPI dbWrk = null;

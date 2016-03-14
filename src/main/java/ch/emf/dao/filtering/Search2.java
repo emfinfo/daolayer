@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author jcstritt
  *
- * @hidden
+ * @opt nodefillcolor LemonChiffon
  */
 public class Search2 {
   private int firstResult;

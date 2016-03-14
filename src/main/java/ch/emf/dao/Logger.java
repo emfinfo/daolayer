@@ -73,6 +73,7 @@ public class Logger {
   /**
    * Méthode pour afficher un message d'information.
    *
+   * @param cl la classe de l'appelant
    * @param msg le message à afficher
    */
   public static void info( Class<?> cl, Object msg ) {
@@ -93,6 +94,7 @@ public class Logger {
   /**
    * Méthode pour afficher un message de deboguage.
    *
+   * @param cl la classe de l'appelant
    * @param msg le message à afficher
    */
   public static void debug( Class<?> cl, Object msg ) {
@@ -113,6 +115,7 @@ public class Logger {
   /**
    * Méthode pour afficher un message d'erreur.
    *
+   * @param cl la classe de l'appelant
    * @param msg le message à afficher
    */
   public static void error( Class<?> cl, Object msg ) {

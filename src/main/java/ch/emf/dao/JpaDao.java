@@ -13,11 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.metamodel.EntityType;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * Couche DAO qui cache tout détail de la persistance à l'utilisateur de cette couche.
@@ -32,6 +27,7 @@ import org.eclipse.persistence.sessions.Session;
  * @depend - - - Logger
  * @depend - - - EntityInfo
  * @depend - - - Search
+ * @depend - - - Search2
  */
 public class JpaDao implements JpaDaoAPI {
   private final Class<?> clazz;

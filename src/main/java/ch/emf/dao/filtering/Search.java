@@ -1,13 +1,11 @@
 package ch.emf.dao.filtering;
 
-import ch.emf.dao.EntityInfo;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import static javax.management.Query.attr;
 
 /**
  * Classe qui mémorise toutes les informations nécessaires à un filtrage de données.

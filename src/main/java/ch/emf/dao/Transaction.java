@@ -171,6 +171,8 @@ public class Transaction {
    * le cas pour un serveur d'applications tel que GlassFish qui ne supporte pas
    * qu'une transaction soit commencée sans être terminée (ce qui exclue le mode
    * autocommit=true).
+   * 
+   * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void begin() throws Exception {
     if (ut != null) {
@@ -182,6 +184,8 @@ public class Transaction {
 
   /**
    * Validation automatique d'une transaction dans JpaDao si l'autocommit est à true.
+   * 
+   * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void commit() throws Exception {
     if (autoCommit) {
@@ -191,6 +195,8 @@ public class Transaction {
 
   /**
    * Annulation automatique d'une transaction dans JpaDao si l'autocommit est à true.
+   * 
+   * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void rollback() throws Exception {
     if (autoCommit) {
@@ -214,6 +220,8 @@ public class Transaction {
 
   /**
    * Validation manuelle d'une transaction si l'autocommit est à false.
+   * 
+   * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void commitManualTransaction() throws Exception {
     if (!autoCommit) {
@@ -223,6 +231,8 @@ public class Transaction {
 
   /**
    * Annulation manuelle d'une transaction si l'autocommit est à false.
+   * 
+   * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void rollbackManualTransaction() throws Exception {
     if (!autoCommit) {
