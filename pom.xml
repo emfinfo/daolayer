@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
     
   <!-- the basics -->
-  <groupId>ch.emfinfo</groupId>
+  <groupId>ch.emf.info</groupId>
   <artifactId>daolayer</artifactId>
   <version>5.34</version>
   <packaging>jar</packaging>
