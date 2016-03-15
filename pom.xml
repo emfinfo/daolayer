@@ -68,7 +68,7 @@
     </dependency>
     
     <dependency>       
-      <groupId>ch.jcsinfo</groupId>
+      <groupId>ch.emf.info</groupId>
       <artifactId>basiclib</artifactId>
       <version>1.01</version>
       <scope>test</scope>
