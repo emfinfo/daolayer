@@ -40,6 +40,7 @@ public class JpaDaoTest {
   private static final String CHEMIN_DONNEES = "data";
   private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_Windows_latin1.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
+  private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
   private static final boolean IMPORT_DB = false; // importer la DB depuis le fichier csv (env. 2 minutes)
   private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
@@ -61,21 +62,22 @@ public class JpaDaoTest {
   public static void setUpClass() throws Exception {
     System.out.println("\n>>> " + StackTracer.getCurrentClass() + " <<<");
 
-    // ouvre la BD et récupère une instance sur le worker et la couche dao (uniquement pour ces tests unitaires)
+    // ouvre la BD et récupère une instance sur le worker et la couche dao
     dbWrk = DbWorker.getInstance();
-    dao = dbWrk.getDao();
+    dao = dbWrk.getDao(); // uniquement tests unitaires, dans une app réelle tout dans DbWorker
     
     // si la DB est ouverte
     if (dao.isOpen()) {
       System.out.println(dao.getVersion());
       if (IMPORT_DB) {
-        int n = dbWrk.executerScript(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + SCRIPT_DELETE_ALL));
+        int n1 = dbWrk.executerScript(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + SCRIPT_DELETE_ALL));
+        int n2 = dbWrk.executerScript(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + SCRIPT_IMPORT_LOGINS));
         FileWorker fileWrk = new FileWorker();
         fileWrk.importerDonneesFichier(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + FICHIER_CONSEILLERS));
       }
       PS = dbWrk.rechercherParti("Parti socialiste suisse");
       FR = dbWrk.rechercherCanton("FR");
-      CF = dao.getSingleResult(Conseil.class, "abrev", "CF");
+      CF = dbWrk.rechercherConseil("CF");
     } else {
       System.out.println("ERREUR: LA BD N'A PAS PU ÊTRE OUVERTE !!!");
     }

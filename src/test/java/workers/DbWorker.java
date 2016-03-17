@@ -220,6 +220,7 @@ public class DbWorker implements DbWorkerAPI {
   
   @Override
   public void fermerBD() {
+    terminerTransaction(dao.getTransaction());
     dao.close();
   }
   
