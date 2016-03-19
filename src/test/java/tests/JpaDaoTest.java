@@ -483,8 +483,10 @@ public class JpaDaoTest {
       // mise à jour des objets liés, puis affichage
       System.out.println();
       for (Conseiller c : conseillers) {
-        c.setParti(dao.read(Parti.class, c.getFkPartiSQL()));
-        c.setCanton(dao.read(Canton.class, c.getFkCantonSQL()));
+        Parti p = dao.read(Parti.class, c.getFkPartiSQL());
+        Canton ct = dao.read(Canton.class, c.getFkCantonSQL());
+        c.setParti(p);
+        c.setCanton(ct);
         System.out.println("    " + c + " ("+c.getCanton() +"), "+ c.getParti());
       }
     }
