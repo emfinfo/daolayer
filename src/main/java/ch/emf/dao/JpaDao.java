@@ -950,17 +950,19 @@ public class JpaDao implements JpaDaoAPI {
     return n;
   }
 
-  /**
-   * Pour la classe-entité spécifiée, met à jour une liste globale d'objets.
+/**
+   * Pour la classe-entité spécifiée, met à jour une liste globale d'objets. 
+   * Si un objet n'existe pas, il est rajouté.
    *
-   * @param cl   une classe entité managée par JPA
-   * @param list une liste d'objets à modifier dans la persistance
+   * @param <E> un type générique pour une classe-entité
+   * @param cl une classe entité managée par JPA
+   * @param list une liste d'objets à modifier (ou à ajouter) dans la persistance
    * 
-   * @return le nombre d'objets modifiés, =0 autrement
+   * @return un tableau avec [0]= nb d'objets modifiés, [1]= nb d'objets ajoutés
    */
   @Override
-  public <E> int updateList(Class<?> cl, List<E> list) {
-    int n = 0;
+  public <E> int[] updateList(Class<?> cl, List<E> list) {
+    int n[] = new int[] {0, 0};
     EntityInfo ei = getEntityInfo(cl);
     Method m = ei.findMethod("getPk");
     try {
@@ -968,13 +970,14 @@ public class JpaDao implements JpaDaoAPI {
       for (E e : list) {
         if (exists(cl, getPk(e, m))) {
           em.merge(e);
+          n[0]++;
         } else {
           em.persist(e);
+          n[1]++;
         }
       }
       updatePkMax(ei, getPkMax(ei));
       tr.commitManualTransaction();
-      n = list.size();
     } catch (Exception ex1) {
       Logger.error(clazz, ex1.getMessage());
       try {

@@ -560,17 +560,17 @@ public class JpaDaoTest {
     boolean ok = partis != null && partis.size() > 0;
     
     // on exécute la mise à jour
-    int n1 = dao.updateList(Parti.class, partis);
+    int n1[] = dao.updateList(Parti.class, partis);
     
     // on remet comme avant
     for (Parti parti : partis) {
       parti.setNomParti(ConvertLib.replace(parti.getNomParti(), "_", "", 999));
     }
-    int n2 = dao.updateList(Parti.class, partis);
+    int n2[] = dao.updateList(Parti.class, partis);
     
     // on traite le résultat
-    ok = ok && n1 > 0 & n2 > 0;
-    StackTracer.printTestInfo(Parti.class.getSimpleName(), n2);
+    ok = ok && n1[0] > 0 & n2[0] > 0;
+    StackTracer.printTestInfo(Parti.class.getSimpleName(), n2[0]);
     assertTrue(ok);    
   }
 

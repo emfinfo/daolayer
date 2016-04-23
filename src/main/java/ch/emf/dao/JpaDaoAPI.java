@@ -18,8 +18,8 @@ import javax.persistence.EntityManager;
  *
  * @opt nodefillcolor palegreen
  * @opt all
- * @note V5.34
- * @note 14.03.2016
+ * @note V5.35
+ * @note 23.04.2016
  */
 public interface JpaDaoAPI {
 
@@ -401,14 +401,15 @@ public interface JpaDaoAPI {
   <E> int insertList(Class<?> cl, List<E> list, boolean resetPk);
 
   /**
-   * Pour la classe-entité spécifiée, met à jour une liste globale d'objets.
+   * Pour la classe-entité spécifiée, met à jour une liste globale d'objets. 
+   * Si un objet n'existe pas, il est rajouté.
    *
    * @param <E> un type générique pour une classe-entité
    * @param cl une classe entité managée par JPA
-   * @param list une liste d'objets à modifier dans la persistance
-   * @return le nombre d'objets modifiés, =0 autrement
+   * @param list une liste d'objets à modifier (ou à ajouter) dans la persistance
+   * @return un tableau avec [0]= nb d'objets modifiés, [1]= nb d'objets ajoutés
    */
-  <E> int updateList(Class<?> cl, List<E> list);
+  <E> int[] updateList(Class<?> cl, List<E> list);
 
   /**
    * Détache tous les objets managés par JPA (liste en entrée-sortie).
