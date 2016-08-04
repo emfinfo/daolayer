@@ -56,7 +56,7 @@ public class JpaDao implements JpaDaoAPI {
       }
     }
   }
-  
+
   /**
    * Méthode privée pour mettre à jour dans une table de séquence
    * la dernière valeur de PK.
@@ -78,7 +78,7 @@ public class JpaDao implements JpaDaoAPI {
       }
     }
   }
-  
+
   /**
    * Méthode privée pour construire une requête de type Query basée
    * sur une requête au format String et un tableau de valeurs en paramètre.
@@ -133,7 +133,7 @@ public class JpaDao implements JpaDaoAPI {
 
 
 
-  
+
   /**
    * Ouvre la persistance en spécifiant un nom d'unité de persistance.
    * Ce nom est une identification contenue dans le fichier "persistence.xml".
@@ -221,7 +221,7 @@ public class JpaDao implements JpaDaoAPI {
       readEntities(this.em);
     }
   }
-  
+
   /**
    * Retourne true (vrai) si l'on est toujours connecté à la
    * couche de persistance et sa base de données.
@@ -252,9 +252,9 @@ public class JpaDao implements JpaDaoAPI {
     em = jpaConn.getEntityManager();
   }
 
-  
-  
-  
+
+
+
   /**
    * Retourne la version courante de cette couche d'intégration DAO-JPA.
    *
@@ -302,9 +302,9 @@ public class JpaDao implements JpaDaoAPI {
     return jpaConn.getTransaction();
   }
 
-  
-  
-  
+
+
+
   /**
    * Ajoute un objet dans la persistance.
    *
@@ -337,7 +337,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param cl          une classe entité managée par JPA
    * @param pk          une pk pour identifier l'objet à lire
    * @param refreshFlag TRUE pour rafraichir l'objet après la lecture
-   * 
+   *
    * @return un objet lu et rafraichi éventuellement
    */
   @Override
@@ -360,7 +360,7 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param cl  une classe entité managée par JPA
    * @param pk  une pk pour identifier l'objet à lire
-   * 
+   *
    * @return un objet lu de la classe-entité spécifiée
    */
   @Override
@@ -436,9 +436,9 @@ public class JpaDao implements JpaDaoAPI {
     return ok;
   }
 
-  
-  
-  
+
+
+
   /**
    * Méthode privée de plus bas niveau pour trouver un seul objet
    * basée sur une requête de type Query.
@@ -464,7 +464,7 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param jpql   une requête jpql déjà préparée, manque juste les paramètres
    * @param params un tableau de valeurs pour les paramètres de la requête
-   * 
+   *
    * @return l'objet recherché
    */
   @Override
@@ -481,7 +481,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param cl    une classe entité managée par JPA
    * @param attr  un nom d'attribut de la classe comme critère de recherche
    * @param value une valeur pour le critère de recherche
-   * 
+   *
    * @return l'objet recherché
    */
   @Override
@@ -495,7 +495,7 @@ public class JpaDao implements JpaDaoAPI {
    * de recherche multiples).
    *
    * @param search un objet pour spécifier les critères de la recherche
-   * 
+   *
    * @return l'objet recherché de type
    */
   @Override
@@ -504,9 +504,9 @@ public class JpaDao implements JpaDaoAPI {
     return getSingleResult(query);
   }
 
-  
-  
-  
+
+
+
   /**
    * Méthode privée de plus bas niveau pour récupérer une liste d'objets
    * d'après une requête JPA de type Query.
@@ -526,22 +526,22 @@ public class JpaDao implements JpaDaoAPI {
       query.setMaxResults(maxResults);
     }
     try {
-      query.setHint("javax.persistence.cache.storeMode", "REFRESH");      
+      query.setHint("javax.persistence.cache.storeMode", "REFRESH");
       list = Collections.synchronizedList(query.getResultList());
-      
+
       // détache la liste en démarrant une transaction bidon
       tr.beginManualTransaction();
       tr.commitManualTransaction();
       tr.finishManualTransaction();
 //      System.out.println("JpaDao getList: list is managed = "+ isMerged(list));
-      
+
     } catch (NoResultException ex) {
     } catch (Exception ex) {
       Logger.error(clazz, ex.getMessage());
     }
     return list;
   }
-  
+
   /**
    * Méthode pour récupérer une liste d'objets d'après une requête jpql et
    * une liste de valeurs de paramètres pour la clause de recherche WHERE.
@@ -549,7 +549,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param jpql       une expression de type JPQL
    * @param params     une liste de valeurs pour les paramètres de la requête
    * @param maxResults une limitation des résultats si plus grand que zéro 0
-   * 
+   *
    * @return une liste d'objets de l'entité spécifiée
    */
 //  @Override
@@ -557,13 +557,13 @@ public class JpaDao implements JpaDaoAPI {
 //    Query query = getQuery(jpql, params);
 //    return getList(query, -1, maxResults);
 //  }
-  
+
   /**
    * Pour la classe-entité spécifiée, récupère une liste d'objets triés.
    *
    * @param cl         une classe entité managée par JPA
    * @param sortFields les noms des propriétés de tri (séparés par des virgules)
-   * 
+   *
    * @return une liste d'objets de la classe-entité spécifiée
    */
   @Override
@@ -574,7 +574,7 @@ public class JpaDao implements JpaDaoAPI {
       jpql += ei.getOrderByClause(sortFields);
     }
     Query query = getQuery(jpql, null);
-    return getList(query, -1, -1);    
+    return getList(query, -1, -1);
   }
 
   /**
@@ -585,7 +585,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param attr       un nom d'attribut comme critère de filtrage
    * @param value      une valeur pour le critère de filtrage
    * @param sortFields une liste des attributs de tri
-   * 
+   *
    * @return une liste d'objets filtrée d'après les paramètres spécifiés
    */
   @Override
@@ -598,9 +598,9 @@ public class JpaDao implements JpaDaoAPI {
     Object[] params = new Object[1];
     params[0] = value;
     Query query = getQuery(jpql, params);
-    return getList(query, -1, -1);    
+    return getList(query, -1, -1);
   }
-  
+
   /**
    * Pour la classe-entité spécifiée, récupère une liste d'objets filtrés
    * et non triés, ceci d'après un seul critère basé sur un attribut de la
@@ -609,7 +609,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param cl    une classe entité managée par JPA
    * @param attr  un nom d'attribut comme critère de filtrage
    * @param value une valeur pour le critère de filtrage
-   * 
+   *
    * @return une liste d'objets filtrés et non triés
    */
   @Override
@@ -628,7 +628,7 @@ public class JpaDao implements JpaDaoAPI {
    * - limitation du nombre d'objets (maxResults)
    *
    * @param search un objet pour spécifier les critères de la recherche
-   * 
+   *
    * @return une liste d'objets filtrée et triée d'après l'objet "search"
    */
   @Override
@@ -636,12 +636,12 @@ public class JpaDao implements JpaDaoAPI {
     Query query = getQuery(search);
     return getList(query, search.getFirstResult(), search.getMaxResults());
   }
-  
+
   /**
    * Récupère une liste d'objets en fournissant un objet de type Search2.
    * Cette objet contient directement une requête JPQL et la liste des
    * paramètres de cette requête.
-   * 
+   *
    * @param search un objet pour spécifier les critères de la recherche
    * @return une liste d'objets filtrée et triée d'après l'objet "search"
    */
@@ -649,15 +649,15 @@ public class JpaDao implements JpaDaoAPI {
   public <E> List<E> getList(Search2 search) {
     Query query = getQuery(search.getJpql(), search.getParams());
     return getList(query, search.getFirstResult(), search.getMaxResults());
-  }  
-  
+  }
+
   /**
    * Récupère une liste d'objets en effectuant une requête SQL native.
    *
    * @param sql       une requête SQL native
    * @param params    un tableau de paramètres pour satisfaire la requête
    * @param rsMapping un mapping pour le résultat
-   * 
+   *
    * @return une liste d'objets filtrée d'après la requête
    */
   @Override
@@ -678,13 +678,13 @@ public class JpaDao implements JpaDaoAPI {
       }
       Logger.debug(clazz, sql);
       list = Collections.synchronizedList(query.getResultList());
-      
+
       // détache la liste en démarrant une transaction bidon
       tr.beginManualTransaction();
       tr.commitManualTransaction();
       tr.finishManualTransaction();
 //      System.out.println("JpaDao native getList: list is managed = "+ isMerged(list));
-      
+
     } catch (Exception ex) {
       Logger.error(clazz, ex.getMessage() + " - " + sql);
     }
@@ -698,20 +698,20 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param sql    une requête SQL native
    * @param params un tableau de paramètres pour satisfaire la requête
-   * 
+   *
    * @return une liste d'objets filtrée d'après la requête
    */
   @Override
   public <E> List<E> getList(String sql, Object[] params) {
     return getList(sql, params, "");
   }
-  
+
   /**
    * Permet de récupérer une liste d'agrégats de données
    * composés de colonnes préchoisies de type Field.
    *
    * @param search un objet pour spécifier les critères de la recherche
-   * 
+   *
    * @return une liste d'éléments de tableau
    */
   @Override
@@ -725,15 +725,15 @@ public class JpaDao implements JpaDaoAPI {
     String jpql = select + where + groupby + having + orderby;
     Object[] params = ei.getParams(search);
     Query query = getQuery(jpql, params);
-    return getList(query, search.getFirstResult(), search.getMaxResults());    
+    return getList(query, search.getFirstResult(), search.getMaxResults());
   }
-  
+
   /**
    * Permet de récupérer une liste d'agrégats de données
    * composés de colonnes préchoisies.
    *
    * @param search un objet Search2 pour spécifier les critères de la recherche
-   * 
+   *
    * @return une liste d'éléments de tableau
    */
   @Override
@@ -741,15 +741,15 @@ public class JpaDao implements JpaDaoAPI {
     String jpql = search.getJpql();
     Object[] params = search.getParams();
     Query query = getQuery(jpql, params);
-    return getList(query, search.getFirstResult(), search.getMaxResults());    
-  } 
-  
+    return getList(query, search.getFirstResult(), search.getMaxResults());
+  }
+
   /**
    * Exécute une commande SQL native pour une
    * mise à jour (insert/update) ou un effacement (delete).
    *
    * @param sql la requête SQL native
-   * 
+   *
    * @return le nombre d'enregistrements touchés
    */
   @Override
@@ -779,7 +779,7 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param sqlScriptFileName un nom de fichier script avec des commandes sql
    * @param objects tableau facultatif avec 2 objets (ancien nom de la BD, nouveau nom)
-   * 
+   *
    * @return le nombre total de commandes effectués par le script
    */
   @Override
@@ -844,11 +844,11 @@ public class JpaDao implements JpaDaoAPI {
     }
     return rows;
   }
-  
+
   /**
    * Permet d'effacer le contenu global d'une liste de tables d'après
    * un tenant spécifié avec son nom et sa valeur.
-   * 
+   *
    * @param tenantName le nom d'un tenant
    * @param tenantId l'id de ce tenant (une pk)
    * @param tables une liste des tables-entités à effacer
@@ -879,7 +879,7 @@ public class JpaDao implements JpaDaoAPI {
       tr.finishManualTransaction();
     }
     return rows;
-  }  
+  }
 
   /**
    * Méthode privée pour récupérer la valeur de la PK d'un objet spécifié.
@@ -912,7 +912,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param cl      une classe entité managée par JPA
    * @param list    une liste d'objets à insérer dans la persistance
    * @param resetPk TRUE s'il faut reconstruire les PK
-   * 
+   *
    * @return le nombre d'objets insérés, =0 autrement
    */
   @Override
@@ -951,13 +951,13 @@ public class JpaDao implements JpaDaoAPI {
   }
 
 /**
-   * Pour la classe-entité spécifiée, met à jour une liste globale d'objets. 
+   * Pour la classe-entité spécifiée, met à jour une liste globale d'objets.
    * Si un objet n'existe pas, il est rajouté.
    *
    * @param <E> un type générique pour une classe-entité
    * @param cl une classe entité managée par JPA
    * @param list une liste d'objets à modifier (ou à ajouter) dans la persistance
-   * 
+   *
    * @return un tableau avec [0]= nb d'objets modifiés, [1]= nb d'objets ajoutés
    */
   @Override
@@ -1005,10 +1005,10 @@ public class JpaDao implements JpaDaoAPI {
     } catch (Exception ex1) {
     }
   }
-  
+
   /**
    * Rafraichit tous les objets d'une liste d'objets en mémoire.
-   * 
+   *
    * @param list une liste d'objets managés par JPA
    */
   @Override
@@ -1030,7 +1030,7 @@ public class JpaDao implements JpaDaoAPI {
     } finally {
       tr.finishManualTransaction();
     }
-  }  
+  }
 
   /*
    * Méthode privée pour retrouver le nb d'objets d'après l'objet entity-info
@@ -1060,17 +1060,17 @@ public class JpaDao implements JpaDaoAPI {
     EntityInfo ei = getEntityInfo(cl);
     return count(ei);
   }
-  
-  
+
+
   /**
    * Méthode privée pour récupérer une seule valeur (typiquement pour count, max, min).
-   * 
+   *
    * @param search un objet de recherche (limitée à du filtrage)
    * @return un objet avec une valeur numérique
    */
   private Object getSingleValue(Search search ) {
     return getQuery(search).getSingleResult();
-  }   
+  }
 
   /**
    * Pour la classe-entité spécifiée, retourne le nombre d'objets filtrés
@@ -1079,7 +1079,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param cl    une classe entité managée par JPA
    * @param attr  un nom d'attribut de la classe-entité comme critère de filtrage
    * @param value une valeur de filtrage pour cet attribut
-   * 
+   *
    * @return le nombre d'objets pour le critère spécifié
    */
   @Override
@@ -1089,13 +1089,13 @@ public class JpaDao implements JpaDaoAPI {
     s.addFilterEqual(attr, value);
     return (Long)getSingleValue(s);
   }
-  
+
   /**
    * D'après la requête définie par un objet search, trouve le nombre
    * d'éléments.
-   * 
+   *
    * @param search un objet permettant le filtrage et le tri des données
-   * 
+   *
    * @return le nombre d'éléments retournés basé sur un objet "search"
    */
   @Override
@@ -1107,12 +1107,58 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
-   * Supprime tout objet encore managé par JPA.
+   * Pour la classe-entité spécifiée et un champ donné,
+   * retourne la valeur entière minimale de ce champ.
+   *
+   * @param cl        une classe entité managée par JPA
+   * @param fieldName le nom du champ où récupérer la valeur
+   *
+   * @return la valeur entière minimale pour le champ spécifié
    */
   @Override
-  public void clear() {
-    em.clear();
+  public int getMinIntValue(Class<?> cl, String fieldName) {
+    Search s = new Search(cl);
+    s.addFields("min(" + fieldName + ")");
+    return (Integer)getSingleValue(s);
   }
+
+  /**
+   * Pour la classe-entité spécifiée et un champ donné,
+   * retourne la valeur entière maximale de ce champ.
+   *
+   * @param cl        une classe entité managée par JPA
+   * @param fieldName le nom du champ où récupérer la valeur
+   *
+   * @return la valeur entière maximale pour le champ spécifié
+   */
+  @Override
+  public int getMaxIntValue(Class<?> cl, String fieldName) {
+    Search s = new Search(cl);
+    s.addFields("max(" + fieldName + ")");
+    return (Integer)getSingleValue(s);
+  }
+
+  /**
+   * On peut faire la même chose que les deux précédentes méthodes
+   * getMinIntValue et getMaxIntValue, mais c'est à l'utilisateur de préparer
+   * la requête avec la classe Search. Cela permet de trouver par exemple
+   * un nombre maximale en dessous d'une limite (1000 par exemple).<br>
+   * <br>
+   * Exemple :<br>
+   *   Search s = new Search(BonLivraisonTemp.class);<br>
+   *   s.addFilterLessThan("code", 1000);<br>
+   *   s.addFields("max(code)");<br>
+   *
+   * @param search un objet permettant le filtrage et le tri des données
+   * @return la valeur entière trouvée pour le filtrage spécifié
+   */
+  @Override
+  public int getIntValue(Search search) {
+    return (Integer)getSingleValue(search);
+  }
+
+
+
 
   /**
    * Supprime le contenu du cache JPA.
@@ -1120,7 +1166,15 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public void clearCache() {
     em.getEntityManagerFactory().getCache().evictAll();
-  }  
+  }
+
+  /**
+   * Supprime tout objet encore managé par JPA.
+   */
+  @Override
+  public void clear() {
+    em.clear();
+  }
 
   /**
    * Rafraîchit toutes les données d'un entity-bean (dont les listes 1..N liées).
@@ -1169,22 +1223,22 @@ public class JpaDao implements JpaDaoAPI {
       Logger.error(clazz, ex1.getMessage() + " exception");
     }
   }
-  
+
   /**
    * Retourne TRUE si l'objet passé en paramètre est managé par JPA.
-   * 
+   *
    * @param e un objet d'une certaine classe-entité
    * @return TRUE si l'objet est managé par JPA
    */
   @Override
   public <E> boolean isMerged(E e) {
     return em.contains(e);
-  }   
+  }
 
   /**
-   * Retourne TRUE si le premier élément d'une liste d'objets est managé par JPA 
+   * Retourne TRUE si le premier élément d'une liste d'objets est managé par JPA
    * (sous-entendu les autres objets aussi).
-   * 
+   *
    * @param list une liste d'objets d'une certaine classe-entité
    * @return TRUE si le premier élément est managé
    */
@@ -1196,12 +1250,15 @@ public class JpaDao implements JpaDaoAPI {
     }
     return merged;
   }
-  
+
+
+
+
   /**
    * Pour la classe-entité spécifiée, retourne le nom de la PK.
    *
    * @param cl une classe-entité à introspecter
-   * 
+   *
    * @return le nom de l'attribut avec "pk" dans le nom
    */
   @Override
@@ -1214,7 +1271,7 @@ public class JpaDao implements JpaDaoAPI {
    * Pour la classe-entité spécifiée, retourne le type de la PK.
    *
    * @param cl une classe-entité à introspecter
-   * 
+   *
    * @return le type de la PK
    */
   @Override
@@ -1227,7 +1284,7 @@ public class JpaDao implements JpaDaoAPI {
    * Méthode privée pour retrouver la PK max d'après une information d'entité.
    *
    * @param ei un objet avec les informations principales de la classe-entité
-   * 
+   *
    * @return la PK maximale dans la table sous-jacente
    */
   private Object getPkMax(EntityInfo ei) {
@@ -1246,7 +1303,7 @@ public class JpaDao implements JpaDaoAPI {
    * actuellement utilisée dans la table sous-jacente.
    *
    * @param cl une classe entité managée par JPA
-   * 
+   *
    * @return la valeur maximale de la pk
    */
   @Override
@@ -1256,61 +1313,15 @@ public class JpaDao implements JpaDaoAPI {
     return getPkMax(ei);
   }
 
-  /**
-   * Pour la classe-entité spécifiée et un champ donné (qui doit être
-   * de type entier), retourne la valeur maximale de ce champ.
-   *
-   * @param cl        une classe entité managée par JPA
-   * @param fieldName le nom du champ où récupérer la valeur
-   * 
-   * @return la valeur maximale entière pour le champ spécifié
-   */
-  @Override
-  public int getMaxIntValue(Class<?> cl, String fieldName) {
-    Search s = new Search(cl);
-    s.addFields("max(" + fieldName + ")");
-    return (Integer)getSingleValue(s);
-  }
 
-  /**
-   * Idem que la méthode précédente, mais c'est à l'utilisateur de préparer
-   * la requête avec la classe Search. Exemple :<br>
-   *   Search s = new Search(BonLivraisonTemp.class);<br>
-   *   s.addFilterLessThan("code", 1000);<br>
-   *   s.addFields("max(code)");<br>
-   * 
-   * @param search un objet permettant le filtrage et le tri des données
-   * 
-   * @return la valeur maximale entière pour le champ spécifié et le filtrage
-   */
-  @Override
-  public int getMaxIntValue(Search search) {
-    return (Integer)getSingleValue(search);
-  }  
 
-  /**
-   * Pour la classe-entité spécifiée et un champ donné (qui doit
-   * contenir un nombre encodé dans un String), retourne la valeur
-   * maximale actuelle de ce champ.
-   *
-   * @param cl        une classe entité managée par JPA
-   * @param fieldName le nom du champ où récupérer la valeur
-   * 
-   * @return la valeur maximale "string" pour le champ spécifié
-   */
-  @Override
-  public String getMaxStringValue(Class<?> cl, String fieldName) {
-    Search s = new Search(cl);
-    s.addFields("max(" + fieldName + ")");
-    return (String)getSingleValue(s);
-  }
 
   /**
    * Pour la classe-entité spécifiée, récupère des informations importantes :
    * classe, nom et type de la PK, table de séquence utilisée oui/non.
    *
    * @param cl une classe-entité à introspecter
-   * 
+   *
    * @return les informations recherchées dans un objet EntityInfo
    */
   @Override
@@ -1324,7 +1335,7 @@ public class JpaDao implements JpaDaoAPI {
    * attributs présents dans cette classe.
    *
    * @param cl une classe-entité à introspecter
-   * 
+   *
    * @return une liste des attributs de la classe
    */
   @Override

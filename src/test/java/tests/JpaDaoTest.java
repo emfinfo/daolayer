@@ -49,7 +49,7 @@ public class JpaDaoTest {
   private static DbWorkerAPI dbWrk = null;
   private static JpaDaoAPI dao = null; // juste là pour tester
   private static int lastPk = -1;
-  
+
   private static Parti PS = null;
   private static Canton FR = null;
   private static Conseil CF = null;
@@ -65,7 +65,7 @@ public class JpaDaoTest {
     // ouvre la BD et récupère une instance sur le worker et la couche dao
     dbWrk = DbWorker.getInstance();
     dao = dbWrk.getDao(); // uniquement tests unitaires, dans une app réelle tout dans DbWorker
-    
+
     // si la DB est ouverte
     if (dao.isOpen()) {
       System.out.println(dao.getVersion());
@@ -89,9 +89,9 @@ public class JpaDaoTest {
     System.out.println();
   }
 
-  
+
   /*
-   * METHODES PRIVEES  
+   * METHODES PRIVEES
    */
   private Conseiller getNewConseiller() {
     Conseiller c = new Conseiller();
@@ -113,7 +113,7 @@ public class JpaDaoTest {
 ////    return ConvertLib.getBlankString(36, trace.getMethodName() + ":");
 //  }
 
-  
+
   /*
    * TESTS
    */
@@ -157,22 +157,22 @@ public class JpaDaoTest {
     StackTracer.printTestInfo(lastPk + " (pk)", ok);
     assertTrue(ok);
   }
-  
+
   @Test
   public void test05_exists() {
     StackTracer.printCurrentTestMethod();
     boolean ok = dao.exists(Conseiller.class, 1);
     StackTracer.printTestInfo("1 (pk)", ok);
     assertTrue(ok);
-  }    
-  
+  }
+
   @Test
   public void test06_notExists() {
     StackTracer.printCurrentTestMethod();
     boolean ok = !dao.exists(Conseiller.class, lastPk);
     StackTracer.printTestInfo(lastPk + " (pk)", ok);
     assertTrue(ok);
-  }    
+  }
 
   @Test
   public void test07_count() {
@@ -182,7 +182,7 @@ public class JpaDaoTest {
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), count + " (total depuis 1848) ");
     assertTrue(ok);
   }
-  
+
   @Test
   public void test08_count() {
     StackTracer.printCurrentTestMethod();
@@ -190,19 +190,37 @@ public class JpaDaoTest {
     boolean ok = count > 0;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), count + " (actifs)");
     assertTrue(ok);
-  }  
+  }
 
   @Test
-  public void test09_getPkMax() {
+  public void test09_getMinIntValue() {
+    StackTracer.printCurrentTestMethod();
+    int minInt = dao.getMinIntValue(Conseiller.class, "pkConseiller");
+    boolean ok = minInt > 0;
+    StackTracer.printTestInfo(Conseiller.class.getSimpleName(), minInt + " (pk min)");
+    assertTrue(ok);
+  }
+
+  @Test
+  public void test10_getMaxIntValue() {
+    StackTracer.printCurrentTestMethod();
+    int maxInt = dao.getMaxIntValue(Conseiller.class, "pkConseiller");
+    boolean ok = maxInt > 0;
+    StackTracer.printTestInfo(Conseiller.class.getSimpleName(), maxInt + " (pk max)");
+    assertTrue(ok);
+  }
+
+  @Test
+  public void test11_getPkMax() {
     StackTracer.printCurrentTestMethod();
     Object pkMax = dao.getPkMax(Conseiller.class);
     boolean ok = pkMax != null;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), pkMax + " (pk)");
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test10_getSingleResult() {
+  public void test12_getSingleResult() {
     StackTracer.printCurrentTestMethod();
     final String CONSEIL_RECHERCHE = "CF";
     Conseil conseil = dao.getSingleResult(Conseil.class, "abrev", CONSEIL_RECHERCHE);
@@ -210,9 +228,9 @@ public class JpaDaoTest {
     StackTracer.printTestInfo(Conseil.class.getSimpleName(), conseil);
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test11_getSingleResult_with_Search() {
+  public void test13_getSingleResult_with_Search() {
     StackTracer.printCurrentTestMethod();
     final String NOM_RECHERCHE = "Berset";
     Search s = new Search(Conseiller.class);
@@ -227,15 +245,15 @@ public class JpaDaoTest {
     boolean ok = conseiller != null && conseiller.getNom().equals(NOM_RECHERCHE);
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), conseiller);
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
-  public void test12_getList() {
+  public void test14_getList() {
     StackTracer.printCurrentTestMethod();
 
     // on appelle getList (sans filtrage)
     activites = dao.getList(Activite.class, "dateEntree");
-    
+
     // on traite le résultat
     boolean ok = activites.size() > 0;
     StackTracer.printTestInfo(Activite.class.getSimpleName(), activites.size() + " (total)");
@@ -246,15 +264,15 @@ public class JpaDaoTest {
       }
     }
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
-  public void test13_getList() {
+  public void test15_getList() {
     StackTracer.printCurrentTestMethod();
 
     // on appelle getList avec un filtrage simplifié (un seul champ peut être filtré à la fois)
     List<Conseiller> conseillers = dao.getList(Conseiller.class, "actif", true, "nom,prenom");
-    
+
     // on traite le résultat
     boolean ok = conseillers.size() > 0;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), conseillers.size() + " (actifs)");
@@ -265,12 +283,12 @@ public class JpaDaoTest {
       }
     }
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
-  public void test14_getList_with_Search() {
+  public void test16_getList_with_Search() {
     StackTracer.printCurrentTestMethod();
-    
+
     // on prépare une requête avec un objet Search
     Search search = new Search(Conseiller.class);
     search.addFilterEqual("parti", PS);
@@ -280,14 +298,14 @@ public class JpaDaoTest {
     search.addFilterEqual("actif", true);
     search.addSortAsc("nom", "prenom");
 
-    // autre exemple pour le filtrage des données    
+    // autre exemple pour le filtrage des données
 //    Date d1 = DateTimeLib.stringToDate("01.01.1950");
 //    Date d2 = DateTimeLib.stringToDate("31.12.1960");
 //    search.addFilterBetween("dateNaissance", d1, d2);
-    
+
     // on exécute la requête avec getList
     List<Conseiller> conseillers = dao.getList(search);
-    
+
     // on traite le résultat
     boolean ok = conseillers.size() > 0;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), conseillers.size() + " (actifs PS FR)");
@@ -300,22 +318,22 @@ public class JpaDaoTest {
     assertTrue(ok);
 
   }
-  
+
   @Test
-  public void test15_getList_with_Search2() {
+  public void test17_getList_with_Search2() {
     StackTracer.printCurrentTestMethod();
-    
+
     // avec Search2, il faut spécifier la requête JPQL
     Search2 search = new Search2("SELECT c FROM Conseiller c");
-    
+
     // avec Search2, c'est des AND automatiquement entre les filtres
     search.addFilterEqual("c.actif", true);
     search.addFilterLike("c.nom", "B%");
     search.addSortFields("c.nom", "c.prenom");
-    
+
     // on exécute la requête avec getList
     List<Conseiller> conseillers = dao.getList(search);
-    
+
     // on traite le résultat
     boolean ok = conseillers.size() > 0;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName() , conseillers.size() + " (actifs avec nom B*)");
@@ -328,9 +346,9 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test16_getList_with_Search2() {
+  public void test18_getList_with_Search2() {
     StackTracer.printCurrentTestMethod();
 
     // avec Search2, il faut donner la requête JPQL (avantage : jointure entre plusieurs entity beans possible)
@@ -342,13 +360,13 @@ public class JpaDaoTest {
     search.addFilterEqual("a.conseil", CF );
     search.addFilterIsNull("a.dateSortie");
     search.addSortFields("c.nom", "c.prenom");
-    
+
     // on appelle getList
     List<Activite> activitesCF = dao.getList(search);
-    
+
     // on traite la réponse
     boolean ok = activitesCF.size() > 0;
-    StackTracer.printTestInfo(Conseiller.class.getSimpleName() + "+" 
+    StackTracer.printTestInfo(Conseiller.class.getSimpleName() + "+"
       + Activite.class.getSimpleName(), activitesCF.size() + " (conseillers fédéraux actuels)");
     if (ok && SHOW_LIST) {
       System.out.println();
@@ -361,14 +379,14 @@ public class JpaDaoTest {
   }
 
   @Test
-  public void test17_getList_paged() {
+  public void test19_getList_paged() {
     StackTracer.printCurrentTestMethod();
-    
+
     // on prépare une requête Search
     Search search = new Search(Conseiller.class);
     search.addSortAsc("nom", "prenom");
 
-    // on définit la pagination 
+    // on définit la pagination
     int pageSize = 1000;
     long count = dao.count(search);
     int lastPage = (int) (count / pageSize) + 1;
@@ -377,7 +395,7 @@ public class JpaDaoTest {
     boolean ok = lastPage > 1;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), lastPage);
 
-    // on lit page par page 
+    // on lit page par page
     int totalSize = 0;
     for (int pageNumber = 1; pageNumber <= lastPage; pageNumber++) {
       int firstResult = (pageNumber - 1) * pageSize;
@@ -395,23 +413,23 @@ public class JpaDaoTest {
         System.out.println("    page: " + pageNumber + ", size: " + size + ", " + c1 + " ... " + cN);
       }
     }
-    
+
     // on contrôle le résultat
     ok = ok && (totalSize == dao.count(search));
     assertTrue(ok);
   }
 
   @Test
-  public void test18_getAggregateList_with_Search() { 
+  public void test20_getAggregateList_with_Search() {
     StackTracer.printCurrentTestMethod();
-    
+
     // on prépare la requête (nb de conseillers par parti qui dépasse 100 depuis 1848)
     Search search = new Search(Conseiller.class);
     search.addFields("parti", "count(*)");
     search.addGroupByField("parti");
     search.addHavingCondition("count(*) >= 100");
     search.addSortAsc("parti.nomParti");
-    
+
     // on exécute la requête
     List<Object> list = dao.getAggregateList(search);
 
@@ -431,19 +449,19 @@ public class JpaDaoTest {
   }
 
   @Test
-  public void test19_getAggregateList_with_Search2() {
+  public void test21_getAggregateList_with_Search2() {
     StackTracer.printCurrentTestMethod();
-    
+
     // avec Search2, il faut donner la base de la requête JPQL (avantage : jointure entre plusieurs classes-entités possible)
     String jpql = "SELECT c.canton,count(a.pkActivite) FROM Activite a LEFT JOIN a.conseiller c WHERE a.conseiller=c";
-    
+
     // on prépare la requête (nb de conseillers fédéraux par canton)
     Search2 search = new Search2(jpql);
     search.addFilterEqual("a.conseil", CF );
     search.addGroupByField("c.canton");
 //    search.addHavingCondition("count(a.pkActivite) >= 4");
     search.addSortFields("c.canton.abrev");
-    
+
     // on exécute la requête
     List<Object> list = dao.getAggregateList(search);
 
@@ -461,20 +479,20 @@ public class JpaDaoTest {
     assertTrue(ok);
   }
 
-  
-  
+
+
   @Test
-  public void test20_getList_with_native_sql() {
+  public void test22_getList_with_native_sql() {
     StackTracer.printCurrentTestMethod();
 
     // prépare la requête SQL native
     int pk = FR.getPkCanton();
     String sql = "SELECT * FROM t_conseiller WHERE fkCanton=?1 AND actif=true ORDER BY nom,prenom";
     String[] params = {"" + pk};
-    
+
     // on exécute la requête
     List<Conseiller> conseillers = dao.getList(sql, params, "ConseillerResult");
-    
+
     // on traite le résultat
     boolean ok = conseillers.size() > 0;
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), conseillers.size() + " (conseillers actuels FR)");
@@ -492,24 +510,24 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test21_executeCommand_with_native_sql() {
+  public void test23_executeCommand_with_native_sql() {
     StackTracer.printCurrentTestMethod();
-    
+
     // on prépare et exécute une première commande (modification de l'abréviation du canton)
     int pk = FR.getPkCanton();
     String sql = "UPDATE t_canton SET abrev='FF' WHERE pkCanton=" + pk ;
     int n1 = dao.executeCommand(sql);
-    
+
     // on relit le canton modifié en le détachant de JPA
     Canton c1 = dao.read(Canton.class, pk, true);
     dao.detach(c1);
-    
+
     // on remet l'abréviation comme avant
     sql = "UPDATE t_canton SET abrev='" + FR.getAbrev() + "' WHERE pkCanton=" + pk;
     int n2 = dao.executeCommand(sql);
-    
+
     // on relit pour vérifier si le canton est comme avant
     Canton c2 = dao.read(Canton.class, pk, true);
     dao.detach(c2);
@@ -519,9 +537,9 @@ public class JpaDaoTest {
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), n1+n2);
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test22_deleteAll() {
+  public void test24_deleteAll() {
     StackTracer.printCurrentTestMethod();
     boolean ok = activites != null;
     long before = dao.count(Activite.class);
@@ -531,25 +549,25 @@ public class JpaDaoTest {
     StackTracer.printTestInfo(Activite.class.getSimpleName(), n);
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test23_insertList() {
+  public void test25_insertList() {
     StackTracer.printCurrentTestMethod();
-    
+
     // on exécute d'abord une commande pour avoir l'autoincrément depuis 1
     int n1 = dao.executeCommand("ALTER TABLE t_activite AUTO_INCREMENT=1");
-    
+
     // on insert la liste
     int n2 = dao.insertList(Activite.class, activites, true);
-    
+
     // on vérifie le résultat
     boolean ok = n1 >= 0 && n2 > 0;
     StackTracer.printTestInfo(Activite.class.getSimpleName(), n2);
     assertTrue(ok);
   }
-  
+
   @Test
-  public void test24_updateList() {
+  public void test26_updateList() {
     StackTracer.printCurrentTestMethod();
 
     // on modifie l'ensemble des partis
@@ -558,24 +576,24 @@ public class JpaDaoTest {
       parti.setNomParti(parti.getNomParti() + "_");
     }
     boolean ok = partis != null && partis.size() > 0;
-    
+
     // on exécute la mise à jour
     int n1[] = dao.updateList(Parti.class, partis);
-    
+
     // on remet comme avant
     for (Parti parti : partis) {
       parti.setNomParti(ConvertLib.replace(parti.getNomParti(), "_", "", 999));
     }
     int n2[] = dao.updateList(Parti.class, partis);
-    
+
     // on traite le résultat
     ok = ok && n1[0] > 0 & n2[0] > 0;
     StackTracer.printTestInfo(Parti.class.getSimpleName(), n2[0]);
-    assertTrue(ok);    
+    assertTrue(ok);
   }
 
   @Test
-  public void test25_rollbackManualTransaction() {
+  public void test27_rollbackManualTransaction() {
     StackTracer.printCurrentTestMethod();
 
     // on récupère le gestionnaire de transactions et on démarre une transaction manuelle
@@ -595,7 +613,7 @@ public class JpaDaoTest {
     p1 = new Parti();
     p1.setNomParti("???");
     boolean ok2 = (dao.create(p1) == 1);
-   
+
     // on rollback la transaction
     try {
       tr.rollbackManualTransaction();
@@ -615,7 +633,7 @@ public class JpaDaoTest {
   }
 
   @Test
-  public void test26_getEntityInfo() {
+  public void test28_getEntityInfo() {
     StackTracer.printCurrentTestMethod();
     EntityInfo ei = dao.getEntityInfo(Conseiller.class);
     boolean ok = ei != null;
@@ -624,7 +642,7 @@ public class JpaDaoTest {
   }
 
   @Test
-  public void test27_getEntityFields() {
+  public void test29_getEntityFields() {
     StackTracer.printCurrentTestMethod();
 
     // on récupère la liste des attributs dams l'entity-bean
@@ -646,7 +664,7 @@ public class JpaDaoTest {
   }
 
   @Test
-  public void test28_getEntitiesMap() {
+  public void test30_getEntitiesMap() {
     StackTracer.printCurrentTestMethod();
 
     // on récupère une map des classes-entités
