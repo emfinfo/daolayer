@@ -1119,7 +1119,12 @@ public class JpaDao implements JpaDaoAPI {
   public int getMinIntValue(Class<?> cl, String fieldName) {
     Search s = new Search(cl);
     s.addFields("min(" + fieldName + ")");
-    return (Integer)getSingleValue(s);
+    Object obj = getSingleValue(s);
+    try {
+      return (Integer)obj;
+    } catch (Exception e) {
+      return Integer.parseInt((String)obj);
+    }
   }
 
   /**
@@ -1135,7 +1140,12 @@ public class JpaDao implements JpaDaoAPI {
   public int getMaxIntValue(Class<?> cl, String fieldName) {
     Search s = new Search(cl);
     s.addFields("max(" + fieldName + ")");
-    return (Integer)getSingleValue(s);
+    Object obj = getSingleValue(s);
+    try {
+      return (Integer)obj;
+    } catch (Exception e) {
+      return Integer.parseInt((String)obj);
+    }
   }
 
   /**
