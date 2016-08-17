@@ -19,7 +19,7 @@ import javax.persistence.EntityManager;
  * @opt nodefillcolor palegreen
  * @opt all
  * @note V5.36
- * @note 04.08.2016
+ * @note 17.08.2016
  */
 public interface JpaDaoAPI {
 

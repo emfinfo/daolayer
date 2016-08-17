@@ -47,9 +47,6 @@ public class Search2 {
     values = new ArrayList<>();
     n = 0;
     addAnd = this.jpql.toLowerCase().contains(" where ");
-//    if (!addAnd) {
-//      this.jpql += " where ";
-//    }
   }
 
   public void addFilter(String op, String fieldName, Object value) {
