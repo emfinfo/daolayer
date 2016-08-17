@@ -5,10 +5,10 @@ import java.util.List;
 
 /**
  * Une classe pour préparer une requête JPQL de type select. La base de la
- * requête est fournie au constructeur de la classe ce qui permet même des 
- * "inner join", chose que la classe "Search" standard ne permet pas, 
- * car elle est basée sur une seule table. Les méthodes de cette classe 
- * ajoutent ensuite les différents filtres (pour la clause WHERE avec 
+ * requête est fournie au constructeur de la classe ce qui permet même des
+ * "inner join", chose que la classe "Search" standard ne permet pas,
+ * car elle est basée sur une seule table. Les méthodes de cette classe
+ * ajoutent ensuite les différents filtres (pour la clause WHERE avec
  * des AND automatiques entre deux).<br>
  * <br>
  * Exemple d'utilisation :<br>
@@ -42,14 +42,14 @@ public class Search2 {
 
   public Search2(String jpql) {
     this.jpql = jpql;
-    firstResult = -1; 
-    maxResults = -1; 
+    firstResult = -1;
+    maxResults = -1;
     values = new ArrayList<>();
     n = 0;
     addAnd = this.jpql.toLowerCase().contains(" where ");
-    if (!addAnd) {
-      this.jpql += " where ";
-    }
+//    if (!addAnd) {
+//      this.jpql += " where ";
+//    }
   }
 
   public void addFilter(String op, String fieldName, Object value) {
@@ -58,6 +58,8 @@ public class Search2 {
       values.add(value);
       if (addAnd) {
         jpql += " and ";
+      } else {
+        jpql += " where ";
       }
       addAnd = true;
       jpql += fieldName + op + "?" + n;
@@ -120,14 +122,14 @@ public class Search2 {
   public void addFilterIsNotEmpty(String fieldName) {
     addFilterNoValue(" " + Operator.IS_NOT_EMPTY.getOp(), fieldName);
   }
-  
+
   public void addGroupByField(String fieldName) {
     jpql += " group by " + fieldName;
   }
-  
+
   public void addHavingCondition( String condition ) {
     jpql += " having " + condition;
-  }  
+  }
 
   public void addSortFields(String... fieldNames) {
     if (fieldNames != null) {
@@ -142,7 +144,7 @@ public class Search2 {
       }
     }
   }
-  
+
   public int getFirstResult() {
     return firstResult;
   }
@@ -157,7 +159,7 @@ public class Search2 {
 
   public void setMaxResults( int maxResults ) {
     this.maxResults = maxResults;
-  }  
+  }
 
   public String getJpql() {
 //    System.out.println("*** JPQL = " + jpql);
