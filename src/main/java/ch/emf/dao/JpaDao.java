@@ -12,6 +12,7 @@ import javax.ejb.EJBContext;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.RollbackException;
 import javax.persistence.metamodel.EntityType;
 
 /**
@@ -358,8 +359,8 @@ public class JpaDao implements JpaDaoAPI {
   /**
    * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
    *
-   * @param cl  une classe entité managée par JPA
-   * @param pk  une pk pour identifier l'objet à lire
+   * @param cl une classe entité managée par JPA
+   * @param pk une pk pour identifier l'objet à lire
    *
    * @return un objet lu de la classe-entité spécifiée
    */
@@ -382,12 +383,14 @@ public class JpaDao implements JpaDaoAPI {
       em.merge(e);
       tr.commit();
       n = 1;
-    } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
+    } catch (RollbackException ex1) {
+      n = -1; // si quelqu'un d'autre modifie en même temps (dès 5.37)
+    } catch (Exception ex2) {
+      Logger.error(clazz, ex2.getMessage());
       try {
         tr.rollback();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
+      } catch (Exception ex3) {
+        Logger.error(clazz, ex3.getMessage());
       }
     }
     return n;
