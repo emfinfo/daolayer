@@ -11,13 +11,13 @@ Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
 New in release 5.37 :
-* the "update" method returns now -1 if a concurrent access occurs
+* The "update" method returns now -1 if a concurrent access occurs. In JPA, you must add a @Version annotation on an "version" integer field in each class-entity where update is possible.
 
 New in release 5.36 :
 * "getMaxStringValue" is now deleted from JpaDaoAPI
 * "getMinIntValue" is now added to JpaDaoAPI
 * "getMaxIntValue(Search)" is now renamed "getIntValue(Search)"
-* small bug correction in "Search2" (no more where key when no filter is added)
+* Small bug correction in "Search2" (no more where key when no filter is added)
 
 New in release 5.35 :
-* updateList(...) in JpaDaoAPI now returns an integer array : [0]=number of updated objects, [1]=number of added objects
+* "updateList(...)" in JpaDaoAPI now returns an integer array : [0]=number of updated objects, [1]=number of added objects
