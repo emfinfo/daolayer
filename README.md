@@ -1,4 +1,4 @@
-# daolayer 5.36 - august 2016
+# daolayer 5.37 - september 2016
 A dao layer over JPA. With this library, you work with objects and lists of objects. No sql. Select queries can be made with a Search or Search2 object.
 
 You can download and open this project in NetBeans 8.1. It's a Java 8 maven project. So, dependencies are loaded automaticly from maven central. There are some test classes where you can learn how to use this library.
@@ -10,11 +10,14 @@ mvn test
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
+New in release 5.37 :
+* the "update" method returns now -1 if a concurrent access occurs
+
 New in release 5.36 :
-* getMaxStringValue is now deleted from JpaDaoAPI
-* getMinIntValue is now added to JpaDaoAPI
-* getMaxIntValue(Search) is now renamed getIntValue(Search)
-* small bug correction in Search2 (no more where key when no filter is added)
+* "getMaxStringValue" is now deleted from JpaDaoAPI
+* "getMinIntValue" is now added to JpaDaoAPI
+* "getMaxIntValue(Search)" is now renamed "getIntValue(Search)"
+* small bug correction in "Search2" (no more where key when no filter is added)
 
 New in release 5.35 :
 * updateList(...) in JpaDaoAPI now returns an integer array : [0]=number of updated objects, [1]=number of added objects
