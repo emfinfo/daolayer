@@ -11,8 +11,8 @@ import java.util.*;
 import javax.ejb.EJBContext;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
 import javax.persistence.metamodel.EntityType;
 
 /**
@@ -59,6 +59,27 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
+   * Méthode privée pour effectuer un roolback après qu'une erreur ait été détectée.
+   *
+   * @param ex1 l'exception qui a provoqué l'erreur nécessitant le rollback
+   * @param disp affiche ou pas l'erreur sur la console ou dans le fichier de log
+   */
+  private void rollbackAfterError(Exception ex1, boolean disp) {
+    if (disp) {
+      Logger.error(clazz, ex1.getMessage());
+    }
+    try {
+      if (tr.isAutoCommit()) {
+        tr.rollback();
+      } else {
+        tr.rollbackManualTransaction();
+      }
+    } catch (Exception ex2) {
+      Logger.error(clazz, ex2.getMessage());
+    }
+  }
+
+  /**
    * Méthode privée pour mettre à jour dans une table de séquence
    * la dernière valeur de PK.
    */
@@ -70,12 +91,7 @@ public class JpaDao implements JpaDaoAPI {
         query.executeUpdate();
         tr.commit();
       } catch (Exception ex1) {
-        Logger.error(clazz, ex1.getMessage());
-        try {
-          tr.rollback();
-        } catch (Exception ex2) {
-          Logger.error(clazz, ex2.getMessage());
-        }
+        rollbackAfterError(ex1, true);
       }
     }
   }
@@ -320,12 +336,7 @@ public class JpaDao implements JpaDaoAPI {
       tr.commit();
       n = 1;
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollback();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      rollbackAfterError(ex1, true);
     }
     return n;
   }
@@ -383,15 +394,11 @@ public class JpaDao implements JpaDaoAPI {
       em.merge(e);
       tr.commit();
       n = 1;
-    } catch (RollbackException ex1) {
-      n = -1; // si quelqu'un d'autre modifie en même temps (dès 5.37)
+    } catch (OptimisticLockException ex1) {
+      n = -1;
+      rollbackAfterError(ex1, false);
     } catch (Exception ex2) {
-      Logger.error(clazz, ex2.getMessage());
-      try {
-        tr.rollback();
-      } catch (Exception ex3) {
-        Logger.error(clazz, ex3.getMessage());
-      }
+      rollbackAfterError(ex2, true);
     }
     return n;
   }
@@ -412,13 +419,11 @@ public class JpaDao implements JpaDaoAPI {
       em.remove(e);
       tr.commit();
       n = 1;
-    } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollback();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+    } catch (OptimisticLockException ex1) {
+      n = -1;
+      rollbackAfterError(ex1, false);
+    } catch (Exception ex2) {
+      rollbackAfterError(ex2, true);
     }
     return n;
   }
@@ -757,21 +762,17 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public int executeCommand(String sql) {
+    int n;
     try {
       Query query = em.createNativeQuery(sql);
       Logger.debug(clazz, sql);
-      int n = query.executeUpdate();
+      n = query.executeUpdate();
       tr.commit();
-      return n;
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollback();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
-      return -1;
+      n = 0;
+      rollbackAfterError(ex1, true);
     }
+    return n;
   }
 
   /**
@@ -807,11 +808,12 @@ public class JpaDao implements JpaDaoAPI {
       tr.commitManualTransaction();
     } catch (Exception ex1) {
       Logger.error(clazz, ex1.getMessage());
-      try {
-        // tr.rollbackTransaction();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      n = 0;
+//      try {
+//        tr.rollbackTransaction();
+//      } catch (Exception ex2) {
+//        Logger.error(clazz, ex2.getMessage());
+//      }
     } finally {
       tr.finishManualTransaction();
     }
@@ -819,7 +821,7 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
-   * Pour la classe-entité spécifiée, efface tous les objets managés.
+   * Pour la classe-entité spécifiée, efface tous les objets.
    *
    * @param cl une classe entité managée par JPA
    * @return le nombre d'objets supprimés
@@ -827,25 +829,21 @@ public class JpaDao implements JpaDaoAPI {
   @SuppressWarnings("unchecked")
   @Override
   public int deleteAll(Class<?> cl) {
-    int rows = 0;
+    int n = 0;
     EntityInfo ei = getEntityInfo(cl);
     try {
       tr.beginManualTransaction();
       Query query = em.createQuery(ei.buildDeleteClause());
-      rows = query.executeUpdate();
+      n = query.executeUpdate();
       updatePkMax(ei, 0L);
       tr.commitManualTransaction();
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollbackManualTransaction();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      n = 0;
+      rollbackAfterError(ex1, true);
     } finally {
       tr.finishManualTransaction();
     }
-    return rows;
+    return n;
   }
 
   /**
@@ -859,7 +857,7 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public int deleteAll(String tenantName, int tenantId, String... tables) {
-    int rows = 0;
+    int n = 0;
     String sql;
     Query query;
     try {
@@ -867,21 +865,16 @@ public class JpaDao implements JpaDaoAPI {
       for (String tableName : tables) {
         sql = "DELETE FROM " + tableName + " WHERE " + tenantName + "=" + tenantId;
         query = em.createNativeQuery(sql);
-        rows += query.executeUpdate();
+        n += query.executeUpdate();
       }
       tr.commitManualTransaction();
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      rows = 0;
-      try {
-        tr.rollbackManualTransaction();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      n = 0;
+      rollbackAfterError(ex1, true);
     } finally {
       tr.finishManualTransaction();
     }
-    return rows;
+    return n;
   }
 
   /**
@@ -941,12 +934,7 @@ public class JpaDao implements JpaDaoAPI {
       tr.commitManualTransaction();
       n = list.size();
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollbackManualTransaction();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      rollbackAfterError(ex1, true);
     } finally {
       tr.finishManualTransaction();
     }
@@ -982,12 +970,9 @@ public class JpaDao implements JpaDaoAPI {
       updatePkMax(ei, getPkMax(ei));
       tr.commitManualTransaction();
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollbackManualTransaction();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      n[0] = 0;
+      n[1] = 0;
+      rollbackAfterError(ex1, true);
     } finally {
       tr.finishManualTransaction();
     }
@@ -1024,12 +1009,7 @@ public class JpaDao implements JpaDaoAPI {
       }
       tr.commitManualTransaction();
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage());
-      try {
-        tr.rollbackManualTransaction();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage());
-      }
+      rollbackAfterError(ex1, true);
     } finally {
       tr.finishManualTransaction();
     }
@@ -1200,12 +1180,7 @@ public class JpaDao implements JpaDaoAPI {
       em.refresh(e);
       tr.commit();
     } catch (Exception ex1) {
-      Logger.error(clazz, ex1.getMessage() + " exception");
-      try {
-        tr.rollback();
-      } catch (Exception ex2) {
-        Logger.error(clazz, ex2.getMessage() + " rollback");
-      }
+      rollbackAfterError(ex1, true);
     }
   }
 
