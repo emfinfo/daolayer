@@ -11,7 +11,7 @@ Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
 New in release 5.37 :
-* The "update" method returns now -1 if a concurrent access occurs. In JPA, you must add a @Version annotation on an "version" integer field in each class-entity where update is possible.
+* The "update" and "delete" methods returns now -1 if a concurrent access occurs. In JPA, you must add a @Version annotation on an "version" integer field in each class-entity where update or delete is possible.
 
 New in release 5.36 :
 * "getMaxStringValue" is now deleted from JpaDaoAPI
