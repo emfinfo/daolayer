@@ -66,7 +66,7 @@ public class JpaDaoTest {
     dbWrk = DbWorker.getInstance();
     dao = dbWrk.getDao(); // uniquement tests unitaires, dans une app réelle tout dans DbWorker
 
-    // si la DB est ouverte
+    // si la BD est ouverte
     if (dao.isOpen()) {
       System.out.println(dao.getVersion());
       if (IMPORT_DB) {
@@ -106,13 +106,6 @@ public class JpaDaoTest {
     return c;
   }
 
-//  private String getTestCurrentMethod() {
-//    StackTraceElement e[] = Thread.currentThread().getStackTrace();
-//    StackTraceElement trace = e[2];
-//    return (SHOW_LIST) ? trace.getMethodName() + ": " : ConvertLib.getBlankString(40, trace.getMethodName() + ":");
-////    return ConvertLib.getBlankString(36, trace.getMethodName() + ":");
-//  }
-
 
   /*
    * TESTS
@@ -130,9 +123,9 @@ public class JpaDaoTest {
   @Test
   public void test02_read() {
     StackTracer.printCurrentTestMethod();
-    Conseiller c = dao.read(Conseiller.class, lastPk);
+    Conseiller c = dao.read(Conseiller.class, lastPk, false, true);
     boolean ok = c != null;
-    StackTracer.printTestInfo(lastPk + " (pk)", c);
+    StackTracer.printTestInfo(lastPk + " (pk)", c +", attached: " + dao.isMerged(c));
     assertTrue(ok);
   }
 

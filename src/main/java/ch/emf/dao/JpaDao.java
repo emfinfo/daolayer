@@ -102,6 +102,7 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param jpql   une requête JQPL
    * @param params un tableau d'objets en paramètre pour la recherche
+   *
    * @return une requête complète de type Query (JPA)
    */
   private Query getQuery(String jpql, Object[] params) {
@@ -125,6 +126,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param cl    la classe pour identifier le type d'objet à récupérer
    * @param attr  un nom d'attribut pour la recherche
    * @param value la valeur de cet attribut
+   *
    * @return une requête de type Query (JPA)
    */
   private Query getQuery(Class<?> cl, String attr, Object value) {
@@ -139,6 +141,7 @@ public class JpaDao implements JpaDaoAPI {
    * sur des indications dans un objet Search.
    *
    * @param search l'objet avec toutes les informations de recherche.
+   *
    * @return une requête de type Query (JPA)
    */
   private Query getQuery(Search search) {
@@ -326,6 +329,7 @@ public class JpaDao implements JpaDaoAPI {
    * Ajoute un objet dans la persistance.
    *
    * @param e l'objet à ajouter
+   *
    * @return =1 si l'objet a pu être créé, =0 autrement
    */
   @Override
@@ -343,22 +347,29 @@ public class JpaDao implements JpaDaoAPI {
 
   /**
    * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
-   * On peut aussi lui indiquer de rafraichir l'objet, ce qui est
-   * nécessaire par exemple après une requête native SQL.
+   * On peut aussi lui indiquer de rafraichir l'objet pour disposer
+   * de tous les objets liés à jour. On peut aussi lui indiquer de
+   * tout de suite détacher l'objet de la persistance JPA.
    *
-   * @param cl          une classe entité managée par JPA
-   * @param pk          une pk pour identifier l'objet à lire
-   * @param refreshFlag TRUE pour rafraichir l'objet après la lecture
+   * @param cl      une classe entité managée par JPA
+   * @param pk      une pk pour identifier l'objet à lire
+   * @param refresh TRUE pour rafraichir l'objet après la lecture
+   * @param detach  TRUE pour rendre l'objet détaché après la lecture
    *
-   * @return un objet lu et rafraichi éventuellement
+   * @return un objet lu depuis la BD et éventuellement rafraichi et détaché
    */
   @Override
   @SuppressWarnings("unchecked")
-  public <E> E read(Class<?> cl, Object pk, boolean refreshFlag) {
+  public <E> E read(Class<?> cl, Object pk, boolean refresh, boolean detach) {
     try {
       Object e = em.find(cl, pk);
-      if (refreshFlag && e != null) {
-        refresh(e);
+      if (e != null) {
+        if (refresh) {
+          refresh(e);
+        }
+        if (detach) {
+          detach(e);
+        }
       }
       return (E) e;
     } catch (Exception ex) {
@@ -369,6 +380,26 @@ public class JpaDao implements JpaDaoAPI {
 
   /**
    * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
+   * On peut aussi lui indiquer de rafraichir l'objet pour disposer
+   * de tous les objets liés à jour. L'objet retourné reste
+   * managé (attaché) par la persistance JPA.
+   *
+   * @param cl une classe entité managée par JPA
+   * @param pk une pk pour identifier l'objet à lire
+   * @param refresh TRUE pour rafraichir l'objet après la lecture
+   *
+   * @return un objet lu et éventuellement rafraichi
+   */
+  @Override
+  @SuppressWarnings("unchecked")
+  public <E> E read(Class<?> cl, Object pk, boolean refresh) {
+    return (E) read(cl, pk, refresh, false);
+  }
+
+  /**
+   * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
+   * Les sous-objets liés ne sont pas rafraichis et l'objet retourné
+   * reste managé (attaché) à la persistance JPA.
    *
    * @param cl une classe entité managée par JPA
    * @param pk une pk pour identifier l'objet à lire
@@ -378,14 +409,15 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   @SuppressWarnings("unchecked")
   public <E> E read(Class<?> cl, Object pk) {
-    return (E) read(cl, pk, false);
+    return (E) read(cl, pk, false, false);
   }
 
   /**
    * Modifie un objet dans la persistance.
    *
-   * @param e   l'objet à modifier
-   * @return =1 si l'objet a été modifé, =0 autrement
+   * @param e l'objet à modifier
+   *
+   * @return -1=objet verrouillé momentanément, 0=objet modifié (problème), 1=ok objet modifié
    */
   @Override
   public <E> int update(E e) {
@@ -409,7 +441,8 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param cl une classe entité managée par JPA
    * @param pk une pk pour identifier l'objet à supprimer
-   * @return =1 si l'objet a pu être supprimé, =0 autrement
+   *
+   * @return -1=objet verrouillé momentanément, 0=non supprimé (problème), 1=ok objet supprimé
    */
   @Override
   public int delete(Class<?> cl, Object pk) {
@@ -434,6 +467,7 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param cl une classe entité managée par JPA
    * @param pk une pk pour identifier l'objet
+   *
    * @return true si l'objet existe dans la persistance
    */
   @Override
@@ -452,6 +486,7 @@ public class JpaDao implements JpaDaoAPI {
    * basée sur une requête de type Query.
    *
    * @param query une requête de type Query (JPA)
+   *
    * @return l'objet recherché
    */
   @SuppressWarnings("unchecked")
@@ -521,7 +556,8 @@ public class JpaDao implements JpaDaoAPI {
    *
    * @param query la requête encapsulée dans un objet de type Query de JPA
    * @param firstResult l'index du premier résultat escompté (-1 = pas précisé)
-   * @param maxResults le nombre de résultats escomptés (-1 = pas précisé)
+   * @param maxResults le nombre d'objets escomptés (-1 = pas précisé)
+   *
    * @return une liste d'objets de l'entité spécifiée
    */
   @SuppressWarnings("unchecked")
@@ -651,6 +687,7 @@ public class JpaDao implements JpaDaoAPI {
    * paramètres de cette requête.
    *
    * @param search un objet pour spécifier les critères de la recherche
+   *
    * @return une liste d'objets filtrée et triée d'après l'objet "search"
    */
   @Override
@@ -824,6 +861,7 @@ public class JpaDao implements JpaDaoAPI {
    * Pour la classe-entité spécifiée, efface tous les objets.
    *
    * @param cl une classe entité managée par JPA
+   *
    * @return le nombre d'objets supprimés
    */
   @SuppressWarnings("unchecked")
@@ -853,6 +891,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param tenantName le nom d'un tenant
    * @param tenantId l'id de ce tenant (une pk)
    * @param tables une liste des tables-entités à effacer
+   *
    * @return le nombre d'enregistrements effacés
    */
   @Override
@@ -1036,6 +1075,7 @@ public class JpaDao implements JpaDaoAPI {
    * Pour la classe-entité spécifiée, retourne le nombre total d'objets.
    *
    * @param cl une classe-entité
+   *
    * @return le nombre total d'objets
    */
   @Override
@@ -1049,6 +1089,7 @@ public class JpaDao implements JpaDaoAPI {
    * Méthode privée pour récupérer une seule valeur (typiquement pour count, max, min).
    *
    * @param search un objet de recherche (limitée à du filtrage)
+   *
    * @return un objet avec une valeur numérique
    */
   private Object getSingleValue(Search search ) {
@@ -1143,6 +1184,7 @@ public class JpaDao implements JpaDaoAPI {
    *   s.addFields("max(code)");<br>
    *
    * @param search un objet permettant le filtrage et le tri des données
+   *
    * @return la valeur entière trouvée pour le filtrage spécifié
    */
   @Override
@@ -1216,6 +1258,7 @@ public class JpaDao implements JpaDaoAPI {
    * Retourne TRUE si l'objet passé en paramètre est managé par JPA.
    *
    * @param e un objet d'une certaine classe-entité
+   * 
    * @return TRUE si l'objet est managé par JPA
    */
   @Override
@@ -1228,6 +1271,7 @@ public class JpaDao implements JpaDaoAPI {
    * (sous-entendu les autres objets aussi).
    *
    * @param list une liste d'objets d'une certaine classe-entité
+   *
    * @return TRUE si le premier élément est managé
    */
   @Override
