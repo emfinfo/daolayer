@@ -12,6 +12,7 @@ http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
 New in release 5.1.0 :
 * new read method in API that can detach an object immediatly. This is better for standalone Java applications.
+* old read methods are deleted from API for better understanding of the new one
 
 New in release 5.0.37 :
 * The "update" and "delete" methods returns now -1 if a concurrent access occurs. In JPA, you must add a @Version annotation on an "version" integer field in each class-entity where update or delete is possible.

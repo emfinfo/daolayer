@@ -379,40 +379,6 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
-   * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
-   * On peut aussi lui indiquer de rafraichir l'objet pour disposer
-   * de tous les objets liés à jour. L'objet retourné reste
-   * managé (attaché) par la persistance JPA.
-   *
-   * @param cl une classe entité managée par JPA
-   * @param pk une pk pour identifier l'objet à lire
-   * @param refresh TRUE pour rafraichir l'objet après la lecture
-   *
-   * @return un objet lu et éventuellement rafraichi
-   */
-  @Override
-  @SuppressWarnings("unchecked")
-  public <E> E read(Class<?> cl, Object pk, boolean refresh) {
-    return (E) read(cl, pk, refresh, false);
-  }
-
-  /**
-   * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
-   * Les sous-objets liés ne sont pas rafraichis et l'objet retourné
-   * reste managé (attaché) à la persistance JPA.
-   *
-   * @param cl une classe entité managée par JPA
-   * @param pk une pk pour identifier l'objet à lire
-   *
-   * @return un objet lu de la classe-entité spécifiée
-   */
-  @Override
-  @SuppressWarnings("unchecked")
-  public <E> E read(Class<?> cl, Object pk) {
-    return (E) read(cl, pk, false, false);
-  }
-
-  /**
    * Modifie un objet dans la persistance.
    *
    * @param e l'objet à modifier
@@ -447,7 +413,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public int delete(Class<?> cl, Object pk) {
     int n = 0;
-    Object e = read(cl, pk);
+    Object e = read(cl, pk, false, false);
     try {
       em.remove(e);
       tr.commit();
@@ -1258,7 +1224,7 @@ public class JpaDao implements JpaDaoAPI {
    * Retourne TRUE si l'objet passé en paramètre est managé par JPA.
    *
    * @param e un objet d'une certaine classe-entité
-   * 
+   *
    * @return TRUE si l'objet est managé par JPA
    */
   @Override

@@ -133,7 +133,7 @@ public class JpaDaoTest {
   public void test03_update() {
     StackTracer.printCurrentTestMethod();
     boolean ok = false;
-    Conseiller c = dao.read(Conseiller.class, lastPk);
+    Conseiller c = dao.read(Conseiller.class, lastPk, false, false);
     if (c != null) {
       c.setPrenom("Juliette");
       ok = dao.update(c) == 1;
@@ -145,7 +145,7 @@ public class JpaDaoTest {
   @Test
   public void test04_delete() {
     StackTracer.printCurrentTestMethod();
-    Conseiller c = dao.read(Conseiller.class, lastPk);
+    Conseiller c = dao.read(Conseiller.class, lastPk, false, false);
     boolean ok = dao.delete(Conseiller.class, lastPk) == 1;
     StackTracer.printTestInfo(lastPk + " (pk)", ok);
     assertTrue(ok);
@@ -494,8 +494,8 @@ public class JpaDaoTest {
       // mise à jour des objets liés, puis affichage
       System.out.println();
       for (Conseiller c : conseillers) {
-        Parti p = dao.read(Parti.class, c.getFkPartiSQL());
-        Canton ct = dao.read(Canton.class, c.getFkCantonSQL());
+        Parti p = dao.read(Parti.class, c.getFkPartiSQL(), false, true);
+        Canton ct = dao.read(Canton.class, c.getFkCantonSQL(), false, true);
         c.setParti(p);
         c.setCanton(ct);
         System.out.println("    " + c + " ("+c.getCanton() +"), "+ c.getParti());
@@ -513,20 +513,15 @@ public class JpaDaoTest {
     String sql = "UPDATE t_canton SET abrev='FF' WHERE pkCanton=" + pk ;
     int n1 = dao.executeCommand(sql);
 
-    // on relit le canton modifié en le détachant de JPA
-    Canton c1 = dao.read(Canton.class, pk, true);
-    dao.detach(c1);
-
     // on remet l'abréviation comme avant
     sql = "UPDATE t_canton SET abrev='" + FR.getAbrev() + "' WHERE pkCanton=" + pk;
     int n2 = dao.executeCommand(sql);
 
     // on relit pour vérifier si le canton est comme avant
-    Canton c2 = dao.read(Canton.class, pk, true);
-    dao.detach(c2);
+    Canton canton = dao.read(Canton.class, pk, false, true);
 
     // on traite les résultats
-    boolean ok = (n1 + n2 == 2) && (c2.getAbrev().equals("FR"));
+    boolean ok = (n1 + n2 == 2) && (canton.getAbrev().equals("FR"));
     StackTracer.printTestInfo(Conseiller.class.getSimpleName(), n1+n2);
     assertTrue(ok);
   }
@@ -594,8 +589,8 @@ public class JpaDaoTest {
     tr.beginManualTransaction();
 
     // on lit le dernier conseiller et le dernier parti
-    Conseiller c1 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class));
-    Parti p1 = dao.read(Parti.class, dao.getPkMax(Parti.class));
+    Conseiller c1 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, false);
+    Parti p1 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, false);
     String before = c1.getNom() + " & " + p1.getNomParti();
 
     // on ajoute un nouveau conseiller
@@ -615,8 +610,8 @@ public class JpaDaoTest {
     }
 
     // on relit le dernier conseiller et le dernier parti
-    Conseiller c2 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class));
-    Parti p2 = dao.read(Parti.class, dao.getPkMax(Parti.class));
+    Conseiller c2 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, false);
+    Parti p2 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, false);
     String after = c2.getNom() + " & " + p2.getNomParti();
 
     // on teste l'assertion

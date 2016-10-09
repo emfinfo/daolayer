@@ -150,7 +150,8 @@ public interface JpaDaoAPI {
    * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
    * On peut aussi lui indiquer de rafraichir l'objet pour disposer
    * de tous les objets liés à jour. On peut aussi lui indiquer de
-   * tout de suite détacher l'objet de la persistance JPA.
+   * tout de suite détacher l'objet de la persistance JPA, ce qui
+   * peut être utile dans des applications standalone Java.
    *
    * @param <E> une classe-entité générique
    * @param cl une classe entité managée par JPA
@@ -161,34 +162,6 @@ public interface JpaDaoAPI {
    * @return un objet lu depuis la BD et éventuellement rafraichi et détaché
    */
   <E> E read(Class<?> cl, Object pk, boolean refresh, boolean detach);
-
-  /**
-   * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
-   * On peut aussi lui indiquer de rafraichir l'objet pour disposer
-   * de tous les objets liés à jour. L'objet retourné reste
-   * managé (attaché) par la persistance JPA.
-   *
-   * @param <E> une classe-entité générique
-   * @param cl une classe entité managée par JPA
-   * @param pk une pk pour identifier l'objet à lire
-   * @param refresh TRUE pour rafraichir l'objet après la lecture
-   *
-   * @return un objet lu et éventuellement rafraichi
-   */
-  <E> E read(Class<?> cl, Object pk, boolean refresh);
-
-  /**
-   * Pour la classe-entité spécifiée, lit un objet d'après sa PK.
-   * Les sous-objets liés ne sont pas rafraichis et l'objet retourné
-   * reste managé (attaché) à la persistance JPA.
-   *
-   * @param <E> une classe-entité générique
-   * @param cl une classe entité managée par JPA
-   * @param pk une pk pour identifier l'objet à lire
-   *
-   * @return un objet lu de la classe-entité spécifiée
-   */
-  <E> E read(Class<?> cl, Object pk);
 
   /**
    * Modifie un objet dans la persistance.
