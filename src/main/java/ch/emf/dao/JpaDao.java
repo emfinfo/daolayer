@@ -213,7 +213,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param ctx le contexte EJB
    */
   @Override
-  public void open(EntityManager em, EJBContext ctx) {
+  public void setEntityManager(EntityManager em, EJBContext ctx) {
     if (jpaConn == null) {
       jpaConn = new JpaConnection();
     }
@@ -231,7 +231,7 @@ public class JpaDao implements JpaDaoAPI {
    * @param em l'entity-manager déjà lié à une base de données
    */
   @Override
-  public void open(EntityManager em) {
+  public void setEntityManager(EntityManager em) {
     if (jpaConn == null) {
       jpaConn = new JpaConnection();
     }

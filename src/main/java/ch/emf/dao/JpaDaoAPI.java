@@ -18,8 +18,8 @@ import javax.persistence.EntityManager;
  *
  * @opt nodefillcolor palegreen
  * @opt all
- * @note V5.1.0
- * @note 9.10.2016
+ * @note V5.1.1
+ * @note 29.12.2016
  */
 public interface JpaDaoAPI {
 
@@ -66,7 +66,7 @@ public interface JpaDaoAPI {
    * @param em un objet "entity manager" de JPA
    * @param ctx le contexte EJB
    */
-  void open(EntityManager em, EJBContext ctx); // Glassfish
+  void setEntityManager(EntityManager em, EJBContext ctx); // Glassfish
 
   /**
    * Ouvre la persistance en spécifiant l'entity manager fourni
@@ -74,7 +74,7 @@ public interface JpaDaoAPI {
    *
    * @param em l'entity-manager déjà lié à une base de données
    */
-  void open(EntityManager em); // Play
+  void setEntityManager(EntityManager em); // Play
 
   /**
    * Retourne true (vrai) si l'on est toujours connecté à la
