@@ -197,9 +197,11 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
-   * Ouvre la persistance en spécifiant les paramètres normalement fournis
-   * par un "serveur d'application" tel que GlassFish et son support
+   * Permet de passer directement un objet "entity-manager" à la couche JpaDao
+   * lorsque celui-ci est créé par une autre couche, par exemple par
+   * un "serveur d'application" tel que GlassFish et son support
    * des transactions JTA.<br>
+
    * <br>
    * Pour utiliser correctement :<br>
    * - Avant une classe de type session bean, insérer :<br>
@@ -225,10 +227,10 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
-   * Ouvre la persistance en spécifiant l'entity manager fourni
-   * par une couche d'un serveur d'application tel que "Play".
+   * Permet de passer directement un objet "entity-manager" à la couche JpaDao,
+   * lorsque celui-ci provient d'une autre couche, tel un serveur "Play framework".
    *
-   * @param em l'entity-manager déjà lié à une base de données
+   * @param em un objet "entity-manager" de JPA déjà lié à une base de données
    */
   @Override
   public void setEntityManager(EntityManager em) {

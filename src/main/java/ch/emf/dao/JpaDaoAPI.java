@@ -51,8 +51,9 @@ public interface JpaDaoAPI {
   void open(String pu, Properties props); // standard avec properties
 
   /**
-   * Ouvre la persistance en spécifiant les paramètres normalement fournis
-   * par un "serveur d'application" tel que GlassFish et son support
+   * Permet de passer directement un objet "entity-manager" à la couche JpaDao
+   * lorsque celui-ci est créé par une autre couche, par exemple par
+   * un "serveur d'application" tel que GlassFish et son support
    * des transactions JTA.<br>
    * <br>
    * Pour utiliser correctement :<br>
@@ -69,10 +70,10 @@ public interface JpaDaoAPI {
   void setEntityManager(EntityManager em, EJBContext ctx); // Glassfish
 
   /**
-   * Ouvre la persistance en spécifiant l'entity manager fourni
-   * par une couche d'un serveur d'application tel que "Play".
+   * Permet de passer directement un objet "entity-manager" à la couche JpaDao,
+   * lorsque celui-ci provient d'une autre couche, tel un serveur "Play framework".
    *
-   * @param em l'entity-manager déjà lié à une base de données
+   * @param em un objet "entity-manager" de JPA déjà lié à une base de données
    */
   void setEntityManager(EntityManager em); // Play
 
