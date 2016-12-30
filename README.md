@@ -12,6 +12,7 @@ http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
 New in release 5.1.2 (31.12.2016) :
 * Correct a bug in initialisation of Transaction class : if a transaction is currently active, set autocommit flag to true immediatly. This preserve some tenancy properties stored in the current entity-manager transaction.
+* Add NoTransactionJpa annotation in ch.emf.dao. It's for DbWorkerAPI classes to mark non JPA methods.
 
 New in release 5.1.1 (29.12.2016) :
 * Wwo "open" methods in JpaDaoAPI are now renamed "setEntityManager" when they accept an entity manager as parameter.
