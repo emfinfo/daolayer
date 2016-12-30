@@ -20,7 +20,7 @@ import javax.transaction.UserTransaction;
  * @has 1 - 1 Transaction
  */
 public class JpaConnection implements JpaConnectionAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer V5.1.1 / 29.12.2016";
+  private final String DAOLAYER_VERSION = "DaoLayer V5.1.2 / 30.12.2016";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
   private String pu;
   private Properties props;
@@ -102,8 +102,7 @@ public class JpaConnection implements JpaConnectionAPI {
    * @return un objet de type "Properties"
    */
   @Override
-  public Properties getConnectionProperties( String dbDriver, String dbUrl,
-          String dbUser, String dbPsw ) {
+  public Properties getConnectionProperties( String dbDriver, String dbUrl, String dbUser, String dbPsw ) {
     props = new Properties();
     props.put(JPA2_PREFIX_KEY + ".driver", dbDriver);
     props.put(JPA2_PREFIX_KEY + ".url", dbUrl);
@@ -169,8 +168,7 @@ public class JpaConnection implements JpaConnectionAPI {
    * @return une référence sur l'EntityManager si OK, autrement null
    */
   @Override
-  public EntityManager connect(
-          String pu, String dbDriver, String dbUrl, String dbUser, String dbPsw ) {
+  public EntityManager connect(String pu, String dbDriver, String dbUrl, String dbUser, String dbPsw ) {
     props = getConnectionProperties(dbDriver, dbUrl, dbUser, dbPsw);
     return connect(pu, props);
   }

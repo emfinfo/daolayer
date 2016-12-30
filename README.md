@@ -10,8 +10,11 @@ mvn test
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
+New in release 5.1.2 :
+* Correct a bug in initialisation of Transaction class : if a transaction is currently active, set autocommit flag to true immediatly. This preserve some tenancy properties stored in entity-manager.
+
 New in release 5.1.1 :
-* two "open" methods in JpaDaoAPI are now renamed "setEntityManager" when they accept an entity manager as parameter.
+* Wwo "open" methods in JpaDaoAPI are now renamed "setEntityManager" when they accept an entity manager as parameter.
 
 New in release 5.1.0 :
 * New read method in API that can detach an object immediatly. This is better for standalone Java applications.

@@ -8,7 +8,7 @@ import javax.transaction.UserTransaction;
  * Gestion des transactions. Cette classe est instanciée automatiquement au moment
  * de la connexion JPA.<br>
  * <br>
- * Le mode par défaut est le mode "autocommit" où chaque modification de type 
+ * Le mode par défaut est le mode "autocommit" où chaque modification de type
  * CRUD  sera validée automatiquement et immédiatement dans la BD. <br>
  * Exemple d'utilisation interne pour un "create" :<br>
  * <pre>
@@ -43,7 +43,7 @@ import javax.transaction.UserTransaction;
  *       }
  *   } finally {
  *     tr.finishManualTransaction();
- *   }  
+ *   }
  * </pre>
  *
  * @author P.-A. mettraux / J.-C. Stritt
@@ -70,7 +70,7 @@ public class Transaction {
   }
 
   private void init(boolean auto) {
-    autoCommit = false;
+    autoCommit = isActive(); // false; // change JCS 30.12.2016
     if (auto) {
       setAutoCommitOn();
     } else {
@@ -88,10 +88,10 @@ public class Transaction {
 
   private void commitNow() throws Exception {
     if (isActive()) {
-      if (ut != null) {
-        ut.commit();
-      } else if (et != null) {
+      if (et != null) {
         et.commit();
+      } else if (ut != null) {
+        ut.commit();
       }
     }
     if (autoCommit) begin();
@@ -99,10 +99,10 @@ public class Transaction {
 
   private void rollbackNow() throws Exception {
     if (isActive()) {
-      if (ut != null) {
-          ut.rollback();
-      } else if (et != null) {
+      if (et != null) {
         et.rollback();
+      } else if (ut != null) {
+        ut.rollback();
       }
     }
     if (autoCommit) begin();
@@ -121,12 +121,14 @@ public class Transaction {
   private void setAutoCommitOff() {
     if (autoCommit) {
       try {
-        rollbackNow();
+        commitNow(); // rollbackNow(); // change JCS 30.12.2016
       } catch (Exception e) {
       }
       autoCommit = false;
     }
   }
+
+
 
   /**
    * Permet de connaitre l'état d'une transaction.
@@ -171,20 +173,20 @@ public class Transaction {
    * le cas pour un serveur d'applications tel que GlassFish qui ne supporte pas
    * qu'une transaction soit commencée sans être terminée (ce qui exclue le mode
    * autocommit=true).
-   * 
+   *
    * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void begin() throws Exception {
-    if (ut != null) {
-      ut.begin();
-    } else if (et != null) {
+    if (et != null) {
       et.begin();
+    } else if (ut != null) {
+      ut.begin();
     }
   }
 
   /**
    * Validation automatique d'une transaction dans JpaDao si l'autocommit est à true.
-   * 
+   *
    * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void commit() throws Exception {
@@ -195,7 +197,7 @@ public class Transaction {
 
   /**
    * Annulation automatique d'une transaction dans JpaDao si l'autocommit est à true.
-   * 
+   *
    * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void rollback() throws Exception {
@@ -203,14 +205,14 @@ public class Transaction {
       rollbackNow();
     }
   }
-  
+
   /**
    * Débute une transaction manuelle en mettant l'auto-commit à false.
    */
   public void beginManualTransaction() {
     setAutoCommit(false);
   }
-  
+
   /**
    * Termine une transaction manuelle en remettant l'auto-commit à true.
    */
@@ -220,7 +222,7 @@ public class Transaction {
 
   /**
    * Validation manuelle d'une transaction si l'autocommit est à false.
-   * 
+   *
    * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void commitManualTransaction() throws Exception {
@@ -231,7 +233,7 @@ public class Transaction {
 
   /**
    * Annulation manuelle d'une transaction si l'autocommit est à false.
-   * 
+   *
    * @throws java.lang.Exception l'exception remontée au niveau supérieur
    */
   public void rollbackManualTransaction() throws Exception {
@@ -239,5 +241,5 @@ public class Transaction {
       rollbackNow();
     }
   }
-  
+
 }
