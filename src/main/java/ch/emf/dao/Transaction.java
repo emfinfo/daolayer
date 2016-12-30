@@ -121,7 +121,7 @@ public class Transaction {
   private void setAutoCommitOff() {
     if (autoCommit) {
       try {
-        commitNow(); // rollbackNow(); // change JCS 30.12.2016
+        rollbackNow(); // essayé commitNow(); mais erreur dans les tests unitaires (31.12.2016)
       } catch (Exception e) {
       }
       autoCommit = false;

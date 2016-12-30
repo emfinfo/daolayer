@@ -20,7 +20,7 @@ import javax.transaction.UserTransaction;
  * @has 1 - 1 Transaction
  */
 public class JpaConnection implements JpaConnectionAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer V5.1.2 / 30.12.2016";
+  private final String DAOLAYER_VERSION = "DaoLayer V5.1.2 / 31.12.2016";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
   private String pu;
   private Properties props;
