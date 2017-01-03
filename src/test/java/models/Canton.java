@@ -1,4 +1,4 @@
-package beans;
+package models;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,31 +19,31 @@ import lombok.EqualsAndHashCode;
  * @author jcstritt
  */
 @Entity
-@Table(name = "t_conseil")
+@Table(name = "t_canton")
 @Data
-@EqualsAndHashCode(of="pkConseil", callSuper=false)
-public class Conseil implements Serializable {
+@EqualsAndHashCode(of="pkCanton", callSuper=false)
+public class Canton implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
-  @Column(name = "pkConseil")
-  private Integer pkConseil;
+  @Column(name = "pkCanton")
+  private int pkCanton;
 
   @Basic(optional = false)
   @Column(name = "abrev")
   private String abrev;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "conseil")
-  private List<Activite> activites;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "canton")
+  private List<Conseiller> conseillers;
 
-  public Conseil() {
+  public Canton() {
   }
 
   @Override
   public String toString() {
     return abrev;
   }
-  
+
 }

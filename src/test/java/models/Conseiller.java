@@ -1,5 +1,6 @@
-package beans;
+package models;
 
+import ch.jcsinfo.system.InObject;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +38,7 @@ import lombok.EqualsAndHashCode;
     @ConstructorResult(
       targetClass = Conseiller.class,
       columns = {
-        @ColumnResult(name = "pkConseiller"),
+        @ColumnResult(name = "pkConseiller", type = Integer.class),
         @ColumnResult(name = "nom"),
         @ColumnResult(name = "prenom"),
         @ColumnResult(name = "sexe"),
@@ -62,7 +63,7 @@ public class Conseiller implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkConseiller")
-  private Integer pkConseiller;
+  private int pkConseiller;
 
   @Basic(optional = false)
   @Column(name = "nom")
@@ -102,27 +103,27 @@ public class Conseiller implements Serializable {
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "conseiller")
   @OrderBy("dateEntree ASC")
   private List<Activite> activites;
-  
+
   // attributs juste pour la lecture du fichier .csv
   @Transient
-  private Activite activite;  
+  private Activite activite;
 
   @Transient
-  private Conseil conseil;  
+  private Conseil conseil;
 
   @Transient
-  private Groupe groupe;  
+  private Groupe groupe;
 
   @Transient
-  private Fonction fonction; 
-  
+  private Fonction fonction;
+
   // attributs juste pour la lecture en SQL natif
   @Transient
-  private Integer fkCantonSQL;  
-  
+  private Integer fkCantonSQL;
+
   @Transient
-  private Integer fkPartiSQL;  
-  
+  private Integer fkPartiSQL;
+
   // calcul d'un clé pour identifier des conseillers uniques
   public String getKey() {
     return nom
@@ -136,9 +137,9 @@ public class Conseiller implements Serializable {
 
   public Conseiller() {
   }
-  
+
   // pour les appels de getList avec du SQL natif
-  public Conseiller(Integer pkConseiller, String nom, String prenom, String sexe, 
+  public Conseiller(Integer pkConseiller, String nom, String prenom, String sexe,
       String origine, Date dateNaissance, Date dateDeces, boolean actif,
       Integer fkParti, Integer fkCanton) {
     this.pkConseiller = pkConseiller;
@@ -155,11 +156,15 @@ public class Conseiller implements Serializable {
 
   @Override
   public String toString() {
-    return nom + " " + prenom; 
+    return nom + " " + prenom;
 //      + " ("
 //      + ((dateNaissance != null) ? DateTimeLib.dateToString(dateNaissance) : "?")
 //      + ((dateDeces != null) ? " - " + DateTimeLib.dateToString(dateDeces) : "") + ")"
 //      + ", actif=" + ((actif)?"OUI":"NON");
+  }
+
+  public String toString2() {
+    return InObject.fieldsToString(this);
   }
 
 }

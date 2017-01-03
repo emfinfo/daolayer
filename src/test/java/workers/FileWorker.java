@@ -1,6 +1,6 @@
 package workers;
 
-import beans.Conseiller;
+import models.Conseiller;
 import ch.emf.dao.Transaction;
 import ch.jcsinfo.file.TextFileReader;
 import java.util.List;

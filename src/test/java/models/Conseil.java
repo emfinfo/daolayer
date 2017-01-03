@@ -1,4 +1,4 @@
-package beans;
+package models;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,32 +19,31 @@ import lombok.EqualsAndHashCode;
  * @author jcstritt
  */
 @Entity
-@Table(name = "t_parti")
+@Table(name = "t_conseil")
 @Data
-@EqualsAndHashCode(of="pkParti", callSuper=false)
-public class Parti implements Serializable {
+@EqualsAndHashCode(of="pkConseil", callSuper=false)
+public class Conseil implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
-  @Column(name = "pkParti")
-  private Integer pkParti;
+  @Column(name = "pkConseil")
+  private int pkConseil;
 
   @Basic(optional = false)
-  @Column(name = "nomParti")
-  private String nomParti;
+  @Column(name = "abrev")
+  private String abrev;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "parti")
-  @OrderBy("canton.abrev asc, nom ASC, prenom ASC")
-  private List<Conseiller> conseillers;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "conseil")
+  private List<Activite> activites;
 
-  public Parti() {
+  public Conseil() {
   }
 
   @Override
   public String toString() {
-    return nomParti;
+    return abrev;
   }
-  
+
 }

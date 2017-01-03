@@ -1,10 +1,10 @@
 package tests;
 
-import beans.Activite;
-import beans.Canton;
-import beans.Conseil;
-import beans.Conseiller;
-import beans.Parti;
+import models.Activite;
+import models.Canton;
+import models.Conseil;
+import models.Conseiller;
+import models.Parti;
 import ch.emf.dao.EntityInfo;
 import ch.emf.dao.JpaDaoAPI;
 import ch.emf.dao.Transaction;
@@ -101,6 +101,7 @@ public class JpaDaoTest {
     c.setOrigine("Fribourg");
     c.setDateNaissance(DateTimeLib.stringToDate("1.1.1970"));
     c.setDateDeces(null);
+    c.setActif(true);
     c.setParti(PS);
     c.setCanton(FR);
     return c;
@@ -125,7 +126,7 @@ public class JpaDaoTest {
     StackTracer.printCurrentTestMethod();
     Conseiller c = dao.read(Conseiller.class, lastPk, false, true);
     boolean ok = c != null;
-    StackTracer.printTestInfo(lastPk + " (pk)", c +", attached: " + dao.isMerged(c));
+    StackTracer.printTestInfo(lastPk + " (pk)", c + ", attached: " + dao.isMerged(c));
     assertTrue(ok);
   }
 
@@ -138,7 +139,7 @@ public class JpaDaoTest {
       c.setPrenom("Juliette");
       ok = dao.update(c) == 1;
     }
-    StackTracer.printTestInfo(lastPk + " (pk)", c);
+    StackTracer.printTestInfo(lastPk + " (pk)", c + ", attached: " + dao.isMerged(c));
     assertTrue(ok);
   }
 
@@ -147,7 +148,7 @@ public class JpaDaoTest {
     StackTracer.printCurrentTestMethod();
     Conseiller c = dao.read(Conseiller.class, lastPk, false, false);
     boolean ok = dao.delete(Conseiller.class, lastPk) == 1;
-    StackTracer.printTestInfo(lastPk + " (pk)", ok);
+    StackTracer.printTestInfo(lastPk + " (pk), " + c.toString(), ok);
     assertTrue(ok);
   }
 
@@ -589,8 +590,8 @@ public class JpaDaoTest {
     tr.beginManualTransaction();
 
     // on lit le dernier conseiller et le dernier parti
-    Conseiller c1 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, false);
-    Parti p1 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, false);
+    Conseiller c1 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, true);
+    Parti p1 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, true);
     String before = c1.getNom() + " & " + p1.getNomParti();
 
     // on ajoute un nouveau conseiller
@@ -610,8 +611,8 @@ public class JpaDaoTest {
     }
 
     // on relit le dernier conseiller et le dernier parti
-    Conseiller c2 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, false);
-    Parti p2 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, false);
+    Conseiller c2 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, true);
+    Parti p2 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, true);
     String after = c2.getNom() + " & " + p2.getNomParti();
 
     // on teste l'assertion

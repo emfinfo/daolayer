@@ -1,4 +1,4 @@
-package beans;
+package models;
 
 import ch.jcsinfo.datetime.DateTimeLib;
 import java.io.Serializable;
@@ -32,7 +32,7 @@ public class Activite implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkActivite")
-  private Integer pkActivite;
+  private int pkActivite;
 
   @Column(name = "dateEntree")
   @Temporal(TemporalType.DATE)
@@ -70,5 +70,5 @@ public class Activite implements Serializable {
       + ((dateSortie != null) ? " - " + DateTimeLib.dateToString(dateSortie) : "")
       + ((dateEntree != null || dateSortie != null) ? ")" : "");
   }
-  
+
 }

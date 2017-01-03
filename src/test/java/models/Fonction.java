@@ -1,4 +1,4 @@
-package beans;
+package models;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,7 +29,7 @@ public class Fonction implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkFonction")
-  private Integer pkFonction;
+  private int pkFonction;
 
   @Basic(optional = false)
   @Column(name = "nomFonction")
@@ -40,10 +40,10 @@ public class Fonction implements Serializable {
 
   public Fonction() {
   }
-  
+
   @Override
   public String toString() {
     return nomFonction.toLowerCase();
   }
-  
+
 }

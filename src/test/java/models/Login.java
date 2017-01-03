@@ -1,4 +1,4 @@
-package beans;
+package models;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -21,32 +21,32 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(of="pkLogin", callSuper=false)
 public class Login implements Serializable {
   private static final long serialVersionUID = 1L;
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkLogin")
-  private Integer pkLogin;
+  private int pkLogin;
 
   @Basic(optional = false)
   @Column(name = "nom")
   private String nom;
-  
+
   @Column(name = "motDePasse")
   private String motDePasse;
-  
+
   @Column(name = "domaine")
   private String domaine;
-  
+
   @Column(name = "profil")
   private String profil;
-  
+
   @Column(name = "email")
   private String email;
-  
+
   @Column(name = "initiales")
   private String initiales;
-  
+
   @Column(name = "langue")
   private String langue;
 
@@ -57,5 +57,5 @@ public class Login implements Serializable {
   public String toString() {
     return nom + " (" + langue + ")";
   }
-  
+
 }

@@ -1,12 +1,12 @@
 package workers;
 
-import beans.Activite;
-import beans.Canton;
-import beans.Conseil;
-import beans.Conseiller;
-import beans.Fonction;
-import beans.Groupe;
-import beans.Parti;
+import models.Activite;
+import models.Canton;
+import models.Conseil;
+import models.Conseiller;
+import models.Fonction;
+import models.Groupe;
+import models.Parti;
 import ch.jcsinfo.datetime.DateTimeLib;
 import ch.jcsinfo.file.TextFileExtracter;
 
