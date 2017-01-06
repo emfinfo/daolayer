@@ -12,14 +12,14 @@ http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
 New in release 5.1.3 (5.1.2017) :
 * Correct a bug in "inserList" and "updateList" (a flush is added to have a sorted list correct inserted).
-* The tests are now adapted to new "parlement" database structure (version 2017)
+* The tests are now adapted to new "parlement" database structure (2017)
 
 New in release 5.1.2 (31.12.2016) :
 * Correct a bug in initialisation of Transaction class : if a transaction is currently active, set autocommit flag to true immediatly. This preserve some tenancy properties stored in the current entity-manager transaction.
 * Add NoTransactionJpa annotation in ch.emf.dao. It's for DbWorkerAPI classes to mark non JPA methods.
 
 New in release 5.1.1 (29.12.2016) :
-* Wwo "open" methods in JpaDaoAPI are now renamed "setEntityManager" when they accept an entity manager as parameter.
+* Two "open" methods in JpaDaoAPI are now renamed "setEntityManager" when they accept an entity manager as parameter.
 
 New in release 5.1.0 (11.10.2016) :
 * New read method in API that can detach an object immediatly. This is better for standalone Java applications.
