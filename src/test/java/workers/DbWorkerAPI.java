@@ -34,10 +34,9 @@ public interface DbWorkerAPI {
   int ajouterPartis(List<Parti> partis);
   int ajouterConseils(List<Conseil> conseils);
   int ajouterGroupes(List<Groupe> groupes);
-//  int ajouterConseillers(List<Conseiller> conseillers);
+  int ajouterConseillers(List<Conseiller> conseillers);
 
   // ajouts individuels
-  int ajouterConseiller(Conseiller conseiller);
   int ajouterActivite(Activite activite);
 
   // fonctions génériques avec la base de données

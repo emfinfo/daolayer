@@ -112,30 +112,28 @@ public class DbWorker implements DbWorkerAPI {
     return dao.insertList(Groupe.class, groupes, false);
   }
 
-//  @Override
-//  public int ajouterConseillers(List<Conseiller> conseillers) {
-//    return dao.insertList(Conseiller.class, conseillers, false);
-//  }
-
   @Override
-  public int ajouterConseiller(Conseiller cons) {
-    int n = 0;
-    Conseiller consTrouve = rechercherConseiller(cons);
-    if (consTrouve == null) {
-      n = dao.create(cons);
-    } else {
-      cons.setPkConseiller(consTrouve.getPkConseiller());
-      if (cons.isActif() != consTrouve.isActif()) {
-        consTrouve.setActif(consTrouve.isActif() || cons.isActif());
-        dao.update(consTrouve);
-      }
-    }
-    return n;
+  public int ajouterConseillers(List<Conseiller> conseillers) {
+    return dao.insertList(Conseiller.class, conseillers, false);
   }
 
   @Override
   public int ajouterActivite(Activite activite) {
-    return dao.create(activite);
+    Search s = new Search(Activite.class);
+    s.addFilterEqual("dateEntree", activite.getDateEntree());
+    s.addFilterAnd();
+    s.addFilterEqual("dateSortie", activite.getDateSortie());
+    s.addFilterAnd();
+    s.addFilterEqual("conseiller", activite.getConseiller());
+    s.addFilterAnd();
+    s.addFilterEqual("conseil", activite.getConseil());
+    s.addFilterAnd();
+    s.addFilterEqual("groupe", activite.getGroupe());
+    int n = 0;
+    if (dao.getSingleResult(s) == null) {
+      n = dao.create(activite);
+    }
+    return n;
   }
 
   /*

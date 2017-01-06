@@ -39,11 +39,11 @@ import workers.FileWorker;
 public class JpaDaoTest {
   private static final String PU = "parlementPU";
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2016_12_30.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2017_01_06.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
-  private static final boolean IMPORT_DB = false; // importer la DB depuis le fichier csv (env. 2 minutes)
+  private static final boolean IMPORT_DB = false; // importer la DB depuis le fichier csv (30-60s)
   private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
   private static final int LIST_MAXSIZE = 4; // le maximum d'entrées affichées pour les longues listes
 
