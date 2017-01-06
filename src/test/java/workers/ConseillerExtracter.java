@@ -1,25 +1,24 @@
 package workers;
 
+import ch.jcsinfo.datetime.DateTimeLib;
+import ch.jcsinfo.file.BeanExtracter;
 import models.Activite;
 import models.Canton;
 import models.Conseil;
 import models.Conseiller;
-import models.Fonction;
+import models.EtatCivil;
 import models.Groupe;
 import models.Parti;
-import ch.jcsinfo.datetime.DateTimeLib;
-import ch.jcsinfo.file.TextFileExtracter;
 
 /**
- * Extracteur de ligne csv (ou autre) pour les conseillers. Exemple :<br>
- * 0    1        2       3 4  5  6      7      8             9         10<br>
- * FAUX;Giuseppe;a Marca;m;GR;CE;Centre;Membre;Conservateurs;1851-07-2;1849-12-2<br>
- * 
+ * Extracteur d'un bean "Conseiller" depuis une ligne de fichier csv.
+ *
  * @author Jean-Claude Stritt
  */
-public class ConseillerExtracter implements TextFileExtracter<Conseiller> {
-  private final String INDEFINISSABLE = "Indéfinissable";
-  private final String INCONNU = "Inconnu";
+public class ConseillerExtracter implements BeanExtracter<Conseiller> {
+  private final String INDEFINI_ABREV = "?";
+  private final String INDEFINI_NOM = "--";
+
   private String sep;
 
   public ConseillerExtracter(String sep) {
@@ -33,65 +32,100 @@ public class ConseillerExtracter implements TextFileExtracter<Conseiller> {
 //  }
 
   @Override
-  public Conseiller extract(String line, int lineNbr) {
+  public Conseiller textToBean(String line) {
     String[] tab = line.split(sep);
     Conseiller cons = new Conseiller();
-    String abrev;
-    
-    if (tab.length >= 11) {
+
+    if (tab.length >= 19) {
+
       // conseiller
       cons.setActif(tab[0].trim().equals("VRAI"));
-      cons.setPrenom(tab[1]);
-      cons.setNom(tab[2]);
-      cons.setSexe(tab[3]);
-//      conseiller.setOrigine(tab[?].trim()); // TODO: à remplacer dès info connue
-//      conseiller.setDateNaissance(DateTimeLib.stringToDate(tab[?])); // TODO: à remplacer dès info connue
-//      conseiller.setDateDeces(DateTimeLib.stringToDate(tab[?])); // TODO: à remplacer dès info connue
-      cons.setOrigine(null);
-      cons.setDateNaissance(null);
-      cons.setDateDeces(null);
+      cons.setPrenom(tab[1].trim());
+      cons.setNom(tab[2].trim());
+      cons.setSexe(tab[3].trim());
+      cons.setLieuNaissance(tab[12].trim());
+      cons.setCantonNaissance(tab[13].trim());
+      cons.setMandats(tab[14].trim());
+      cons.setCitoyennete(tab[17].trim());
+      cons.setDateNaissance(DateTimeLib.isoStringToDate(tab[18]));
+      if (tab.length >= 20) {
+        cons.setDateDeces(DateTimeLib.isoStringToDate(tab[19]));
+      }
 
       // canton
       Canton canton = new Canton();
-      canton.setAbrev(tab[4]);
+      canton.setNom(tab[4].trim());
+      canton.setAbrev(tab[5].trim());
+      if (canton.getAbrev().isEmpty()) {
+        canton.setAbrev(INDEFINI_ABREV);
+        canton.setNom(INDEFINI_NOM);
+      }
       cons.setCanton(canton);
 
       // conseil
       Conseil conseil = new Conseil();
-      conseil.setAbrev(tab[5]);
+      conseil.setNom(tab[6].trim());
+      String s = conseil.getNom().toLowerCase();
+      if (s.contains("nal")) {
+        conseil.setAbrev("CN");
+      } else if (s.contains("ats")) {
+        conseil.setAbrev("CE");
+      } else if (s.contains("ral")) {
+        conseil.setAbrev("CF");
+      } else {
+        conseil.setAbrev(INDEFINI_ABREV);
+        conseil.setNom(INDEFINI_NOM);
+      }
       cons.setConseil(conseil);
 
       // groupe
       Groupe groupe = new Groupe();
-      groupe.setNomGroupe(tab[6].trim());
-      if (groupe.getNomGroupe().length() < 2) {
-        groupe = null;
+      groupe.setNom(tab[7].trim());
+      groupe.setAbrev(tab[8].trim());
+      if (groupe.getAbrev().isEmpty()) {
+        groupe.setAbrev(INDEFINI_ABREV);
+        groupe.setNom("Inconnu");
+      } else {
+        groupe.setAbrev(groupe.getAbrev().toUpperCase());
       }
       cons.setGroupe(groupe);
 
-      // fonction
-      Fonction fonction = new Fonction();
-      fonction.setNomFonction(tab[7].trim());
-      if (cons.getGroupe()==null || fonction.getNomFonction().length() < 2) {
-        fonction = null;
-      }
-      cons.setFonction(fonction);
-
       // parti
       Parti parti = new Parti();
-      parti.setNomParti(tab[8].trim());
-      if (parti.getNomParti().length() < 2) {
-        parti.setNomParti(INDEFINISSABLE);
+      parti.setNom(tab[9].trim());
+      parti.setAbrev(tab[10].trim());
+      if (parti.getAbrev().isEmpty()) {
+        parti.setAbrev(INDEFINI_ABREV);
+        parti.setNom("Indéfinissable");
+      } else {
+        parti.setNom(parti.getNom().substring(0, 1).toUpperCase() + parti.getNom().substring(1));
+        if (parti.getAbrev().substring(0, 1).compareTo("Z") > 0) {
+          if (!parti.getAbrev().contains("proc ")) {
+            parti.setAbrev(parti.getAbrev().toUpperCase());
+          }
+        }
       }
-      parti.setNomParti(parti.getNomParti().substring(0, 1).toUpperCase() + parti.getNomParti().substring(1));
       cons.setParti(parti);
-      
+
+      // etat civil
+      EtatCivil ec = new EtatCivil();
+      ec.setNom(tab[11].trim());
+      if (ec.getNom().isEmpty()) {
+        ec.setAbrev(INDEFINI_ABREV);
+        ec.setNom(INDEFINI_NOM);
+      } else {
+        ec.setAbrev(ec.getNom().substring(0, 1).toUpperCase());
+      }
+      cons.setEtatCivil(ec);
+
       // activite
       Activite activite = new Activite();
-      activite.setDateSortie(DateTimeLib.isoStringToDate(tab[9]));
-      activite.setDateEntree(DateTimeLib.isoStringToDate(tab[10]));
+      activite.setDateEntree(DateTimeLib.isoStringToDate(tab[15]));
+      activite.setDateSortie(DateTimeLib.isoStringToDate(tab[16]));
       cons.setActivite(activite);
-      
+
+//      System.out.println(cons.toString2());
+
     }
     return cons;
   }

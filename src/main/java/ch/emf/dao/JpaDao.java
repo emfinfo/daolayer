@@ -936,6 +936,7 @@ public class JpaDao implements JpaDaoAPI {
       tr.beginManualTransaction();
       for (E e : list) {
         em.persist(e);
+        em.flush(); // STT 5.1.2017
       }
       updatePkMax(ei, getPkMax(ei));
       tr.commitManualTransaction();
@@ -973,6 +974,7 @@ public class JpaDao implements JpaDaoAPI {
           em.persist(e);
           n[1]++;
         }
+        em.flush(); // STT 5.1.2017
       }
       updatePkMax(ei, getPkMax(ei));
       tr.commitManualTransaction();

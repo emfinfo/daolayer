@@ -1,5 +1,6 @@
 package models;
 
+import ch.jcsinfo.system.InObject;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -23,29 +24,39 @@ import lombok.EqualsAndHashCode;
 @Table(name = "t_parti")
 @Data
 @EqualsAndHashCode(of="pkParti", callSuper=false)
-public class Parti implements Serializable {
+public class Parti implements Serializable, Comparable<Parti> {
   private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkParti")
-  private int pkParti;
+  private Integer pkParti;
 
   @Basic(optional = false)
-  @Column(name = "nomParti")
-  private String nomParti;
+  @Column(name = "abrev")
+  private String abrev;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "parti")
+  @Basic(optional = false)
+  @Column(name = "nom")
+  private String nom;
+
+  @OneToMany(mappedBy = "parti", cascade = CascadeType.DETACH)
   @OrderBy("canton.abrev asc, nom ASC, prenom ASC")
   private List<Conseiller> conseillers;
 
-  public Parti() {
+  @Override
+  public String toString() {
+    return abrev;
+  }
+
+  public String toString2() {
+    return InObject.fieldsToString(this);
   }
 
   @Override
-  public String toString() {
-    return nomParti;
+  public int compareTo(Parti o) {
+    return abrev.compareTo(o.getAbrev());
   }
 
 }

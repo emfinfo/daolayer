@@ -1,5 +1,6 @@
 package models;
 
+import ch.jcsinfo.system.InObject;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -26,7 +27,7 @@ public class Login implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkLogin")
-  private int pkLogin;
+  private Integer pkLogin;
 
   @Basic(optional = false)
   @Column(name = "nom")
@@ -50,12 +51,12 @@ public class Login implements Serializable {
   @Column(name = "langue")
   private String langue;
 
-  public Login() {
-  }
-
   @Override
   public String toString() {
     return nom + " (" + langue + ")";
   }
-
+  
+  public String toString2() {
+    return InObject.fieldsToString(this);
+  }
 }

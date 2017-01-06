@@ -21,17 +21,17 @@ import lombok.EqualsAndHashCode;
  * @author jcstritt
  */
 @Entity
-@Table(name = "t_groupe")
+@Table(name = "t_etat_civil")
 @Data
-@EqualsAndHashCode(of = "pkGroupe", callSuper = false)
-public class Groupe implements Serializable, Comparable<Groupe> {
-  private static final long serialVersionUID = 1L;
+@EqualsAndHashCode(of = "pkEtatCivil", callSuper = false)
+public class EtatCivil implements Serializable, Comparable<EtatCivil> {
 
+  private static final long serialVersionUID = 1L;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
-  @Column(name = "pkGroupe")
-  private Integer pkGroupe;
+  @Column(name = "pkEtatCivil")
+  private Integer pkEtatCivil;
 
   @Basic(optional = false)
   @Column(name = "abrev")
@@ -41,13 +41,13 @@ public class Groupe implements Serializable, Comparable<Groupe> {
   @Column(name = "nom")
   private String nom;
 
-  @OneToMany(mappedBy = "groupe", cascade = CascadeType.DETACH)
-  @OrderBy("dateEntree ASC,conseiller.nom,conseiller.prenom")
-  private List<Activite> activites;
+  @OneToMany(mappedBy = "etatCivil", cascade = CascadeType.DETACH)
+  @OrderBy("canton.abrev,nom,prenom")
+  private List<Conseiller> conseillers;
 
   @Override
   public String toString() {
-    return abrev;
+    return nom;
   }
 
   public String toString2() {
@@ -55,7 +55,8 @@ public class Groupe implements Serializable, Comparable<Groupe> {
   }
 
   @Override
-  public int compareTo(Groupe o) {
+  public int compareTo(EtatCivil o) {
     return abrev.compareTo(o.getAbrev());
   }
+
 }

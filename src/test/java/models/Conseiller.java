@@ -1,5 +1,6 @@
 package models;
 
+import ch.jcsinfo.datetime.DateTimeLib;
 import ch.jcsinfo.system.InObject;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -38,16 +40,20 @@ import lombok.EqualsAndHashCode;
     @ConstructorResult(
       targetClass = Conseiller.class,
       columns = {
-        @ColumnResult(name = "pkConseiller", type = Integer.class),
+        @ColumnResult(name = "pkConseiller"),
         @ColumnResult(name = "nom"),
         @ColumnResult(name = "prenom"),
         @ColumnResult(name = "sexe"),
-        @ColumnResult(name = "origine", type = String.class),
+        @ColumnResult(name = "mandats", type = String.class),
+        @ColumnResult(name = "citoyennete", type = String.class),
+        @ColumnResult(name = "lieuNaissance", type = String.class),
+        @ColumnResult(name = "cantonNaissance", type = String.class),
         @ColumnResult(name = "dateNaissance", type = Date.class),
         @ColumnResult(name = "dateDeces", type = Date.class),
         @ColumnResult(name = "actif", type = Boolean.class),
-        @ColumnResult(name = "fkParti"),
+        @ColumnResult(name = "fkEtatCivil"),
         @ColumnResult(name = "fkCanton"),
+        @ColumnResult(name = "fkParti")
       }
     )
   }
@@ -55,15 +61,26 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(of = "pkConseiller", callSuper = false)
-public class Conseiller implements Serializable {
-
+public class Conseiller implements Serializable, Comparable<Conseiller> {
   private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkConseiller")
-  private int pkConseiller;
+  private Integer pkConseiller;
+
+  @Basic(optional = false)
+  @Column(name = "actif")
+  private boolean actif;
+
+  @Column(name = "dateNaissance")
+  @Temporal(TemporalType.DATE)
+  private Date dateNaissance;
+
+  @Column(name = "dateDeces")
+  @Temporal(TemporalType.DATE)
+  private Date dateDeces;
 
   @Basic(optional = false)
   @Column(name = "nom")
@@ -77,30 +94,32 @@ public class Conseiller implements Serializable {
   @Column(name = "sexe")
   private String sexe;
 
-  @Column(name = "origine")
-  private String origine;
+  @Column(name = "citoyennete")
+  private String citoyennete;
 
-  @Column(name = "dateNaissance")
-  @Temporal(TemporalType.DATE)
-  private Date dateNaissance;
+  @Column(name = "lieuNaissance")
+  private String lieuNaissance;
 
-  @Column(name = "dateDeces")
-  @Temporal(TemporalType.DATE)
-  private Date dateDeces;
+  @Column(name = "cantonNaissance")
+  private String cantonNaissance;
 
-  @Basic(optional = false)
-  @Column(name = "actif")
-  private boolean actif;
+  @Lob
+  @Column(name = "mandats")
+  private String mandats;
 
-  @JoinColumn(name = "fkParti", referencedColumnName = "pkParti")
+  @JoinColumn(name = "fkEtatCivil", referencedColumnName = "pkEtatCivil")
   @ManyToOne(optional = false)
-  private Parti parti;
+  private EtatCivil etatCivil;
 
   @JoinColumn(name = "fkCanton", referencedColumnName = "pkCanton")
   @ManyToOne(optional = false)
   private Canton canton;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "conseiller")
+  @JoinColumn(name = "fkParti", referencedColumnName = "pkParti")
+  @ManyToOne(optional = false)
+  private Parti parti;
+
+  @OneToMany(mappedBy = "conseiller", orphanRemoval=true, cascade = {CascadeType.DETACH})
   @OrderBy("dateEntree ASC")
   private List<Activite> activites;
 
@@ -114,44 +133,47 @@ public class Conseiller implements Serializable {
   @Transient
   private Groupe groupe;
 
-  @Transient
-  private Fonction fonction;
-
   // attributs juste pour la lecture en SQL natif
+  @Transient
+  private Integer fkEtatCivilSQL;
+
   @Transient
   private Integer fkCantonSQL;
 
   @Transient
   private Integer fkPartiSQL;
 
+
   // calcul d'un clé pour identifier des conseillers uniques
   public String getKey() {
     return nom
-      + " " + prenom
-      //      + " " + this.origine
-      + " " + sexe
-      //      + " " + DateTimeLib.dateToString(this.dateNaissance);
-      + " " + canton.getAbrev()
-      + " " + parti.getNomParti();
+      + "-" + prenom
+      + "-" + sexe
+      + "-" + DateTimeLib.dateToString(this.dateNaissance)
+      + "-" + canton.getAbrev();
   }
 
   public Conseiller() {
   }
 
   // pour les appels de getList avec du SQL natif
-  public Conseiller(Integer pkConseiller, String nom, String prenom, String sexe,
-      String origine, Date dateNaissance, Date dateDeces, boolean actif,
-      Integer fkParti, Integer fkCanton) {
+  public Conseiller(Integer pkConseiller, String nom, String prenom, String sexe, String mandats,
+      String citoyennete, String lieuNaissance, String cantonNaissance, Date dateNaissance, Date dateDeces, boolean actif,
+      Integer fkEtatCivil, Integer fkCanton, Integer fkParti) {
     this.pkConseiller = pkConseiller;
     this.nom = nom;
     this.prenom = prenom;
     this.sexe = sexe;
-    this.origine = origine;
+    this.mandats = mandats;
+    this.citoyennete = citoyennete;
+    this.lieuNaissance = lieuNaissance;
+    this.cantonNaissance = cantonNaissance;
     this.dateNaissance = dateNaissance;
     this.dateDeces = dateDeces;
     this.actif = actif;
-    this.fkPartiSQL = fkParti;
+    this.fkEtatCivilSQL = fkEtatCivil;
     this.fkCantonSQL = fkCanton;
+    this.fkPartiSQL = fkParti;
   }
 
   @Override
@@ -166,5 +188,12 @@ public class Conseiller implements Serializable {
   public String toString2() {
     return InObject.fieldsToString(this);
   }
+
+  @Override
+  public int compareTo(Conseiller o) {
+    return getKey().compareTo(o.getKey());
+  }
+
+
 
 }

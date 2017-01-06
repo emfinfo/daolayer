@@ -1,10 +1,5 @@
 package tests;
 
-import models.Activite;
-import models.Canton;
-import models.Conseil;
-import models.Conseiller;
-import models.Parti;
 import ch.emf.dao.EntityInfo;
 import ch.emf.dao.JpaDaoAPI;
 import ch.emf.dao.Transaction;
@@ -17,6 +12,12 @@ import ch.jcsinfo.util.ConvertLib;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import models.Activite;
+import models.Canton;
+import models.Conseil;
+import models.Conseiller;
+import models.EtatCivil;
+import models.Parti;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
@@ -38,7 +39,7 @@ import workers.FileWorker;
 public class JpaDaoTest {
   private static final String PU = "parlementPU";
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_Windows_latin1.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2016_12_30.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
@@ -50,6 +51,7 @@ public class JpaDaoTest {
   private static JpaDaoAPI dao = null; // juste là pour tester
   private static int lastPk = -1;
 
+  private static EtatCivil EC = null;
   private static Parti PS = null;
   private static Canton FR = null;
   private static Conseil CF = null;
@@ -75,7 +77,8 @@ public class JpaDaoTest {
         FileWorker fileWrk = new FileWorker();
         fileWrk.importerDonneesFichier(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + FICHIER_CONSEILLERS));
       }
-      PS = dbWrk.rechercherParti("Parti socialiste suisse");
+      EC = dbWrk.rechercherEtatCivil("C");
+      PS = dbWrk.rechercherParti("PSS");
       FR = dbWrk.rechercherCanton("FR");
       CF = dbWrk.rechercherConseil("CF");
     } else {
@@ -95,13 +98,14 @@ public class JpaDaoTest {
    */
   private Conseiller getNewConseiller() {
     Conseiller c = new Conseiller();
+    c.setActif(true);
+    c.setDateNaissance(DateTimeLib.stringToDate("1.1.1970"));
+    c.setDateDeces(null);
     c.setPrenom("Jules");
     c.setNom("Tartampion");
     c.setSexe("m");
-    c.setOrigine("Fribourg");
-    c.setDateNaissance(DateTimeLib.stringToDate("1.1.1970"));
-    c.setDateDeces(null);
-    c.setActif(true);
+    c.setCitoyennete("Fribourg");
+    c.setEtatCivil(EC);
     c.setParti(PS);
     c.setCanton(FR);
     return c;
@@ -163,7 +167,7 @@ public class JpaDaoTest {
   @Test
   public void test06_notExists() {
     StackTracer.printCurrentTestMethod();
-    boolean ok = !dao.exists(Conseiller.class, lastPk);
+    boolean ok = lastPk > 0 && !dao.exists(Conseiller.class, lastPk);
     StackTracer.printTestInfo(lastPk + " (pk)", ok);
     assertTrue(ok);
   }
@@ -422,7 +426,7 @@ public class JpaDaoTest {
     search.addFields("parti", "count(*)");
     search.addGroupByField("parti");
     search.addHavingCondition("count(*) >= 100");
-    search.addSortAsc("parti.nomParti");
+    search.addSortAsc("parti.nom");
 
     // on exécute la requête
     List<Object> list = dao.getAggregateList(search);
@@ -495,8 +499,9 @@ public class JpaDaoTest {
       // mise à jour des objets liés, puis affichage
       System.out.println();
       for (Conseiller c : conseillers) {
-        Parti p = dao.read(Parti.class, c.getFkPartiSQL(), false, true);
+        EtatCivil ec = dao.read(EtatCivil.class, c.getFkEtatCivilSQL(), false, true);
         Canton ct = dao.read(Canton.class, c.getFkCantonSQL(), false, true);
+        Parti p = dao.read(Parti.class, c.getFkPartiSQL(), false, true);
         c.setParti(p);
         c.setCanton(ct);
         System.out.println("    " + c + " ("+c.getCanton() +"), "+ c.getParti());
@@ -534,7 +539,7 @@ public class JpaDaoTest {
     long before = dao.count(Activite.class);
     int n = dao.deleteAll(Activite.class);
     long m = dao.count(Activite.class);
-    ok = ok && (n >= 0) && (m == 0);
+    ok = ok && (n > 0) && (m == 0);
     StackTracer.printTestInfo(Activite.class.getSimpleName(), n);
     assertTrue(ok);
   }
@@ -560,9 +565,9 @@ public class JpaDaoTest {
     StackTracer.printCurrentTestMethod();
 
     // on modifie l'ensemble des partis
-    List<Parti> partis = dao.getList(Parti.class, "nomParti");
+    List<Parti> partis = dao.getList(Parti.class, "nom");
     for (Parti parti : partis) {
-      parti.setNomParti(parti.getNomParti() + "_");
+      parti.setNom(parti.getNom() + "_");
     }
     boolean ok = partis != null && partis.size() > 0;
 
@@ -571,7 +576,7 @@ public class JpaDaoTest {
 
     // on remet comme avant
     for (Parti parti : partis) {
-      parti.setNomParti(ConvertLib.replace(parti.getNomParti(), "_", "", 999));
+      parti.setNom(ConvertLib.replace(parti.getNom(), "_", "", 999));
     }
     int n2[] = dao.updateList(Parti.class, partis);
 
@@ -592,7 +597,7 @@ public class JpaDaoTest {
     // on lit le dernier conseiller et le dernier parti
     Conseiller c1 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, true);
     Parti p1 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, true);
-    String before = c1.getNom() + " & " + p1.getNomParti();
+    String before = c1.getNom() + " & " + p1.getNom();
 
     // on ajoute un nouveau conseiller
     c1 = getNewConseiller();
@@ -600,7 +605,7 @@ public class JpaDaoTest {
 
     // on ajoute un nouveau parti
     p1 = new Parti();
-    p1.setNomParti("???");
+    p1.setNom("???");
     boolean ok2 = (dao.create(p1) == 1);
 
     // on rollback la transaction
@@ -613,7 +618,7 @@ public class JpaDaoTest {
     // on relit le dernier conseiller et le dernier parti
     Conseiller c2 = dao.read(Conseiller.class, dao.getPkMax(Conseiller.class), false, true);
     Parti p2 = dao.read(Parti.class, dao.getPkMax(Parti.class), false, true);
-    String after = c2.getNom() + " & " + p2.getNomParti();
+    String after = c2.getNom() + " & " + p2.getNom();
 
     // on teste l'assertion
     boolean ok = ok1 && after.equals(before);

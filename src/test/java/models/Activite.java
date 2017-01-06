@@ -1,6 +1,7 @@
 package models;
 
 import ch.jcsinfo.datetime.DateTimeLib;
+import ch.jcsinfo.system.InObject;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -32,7 +33,7 @@ public class Activite implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
   @Column(name = "pkActivite")
-  private int pkActivite;
+  private Integer pkActivite;
 
   @Column(name = "dateEntree")
   @Temporal(TemporalType.DATE)
@@ -51,24 +52,21 @@ public class Activite implements Serializable {
   private Conseil conseil;
 
   @JoinColumn(name = "fkGroupe", referencedColumnName = "pkGroupe")
-  @ManyToOne
+  @ManyToOne(optional = false)
   private Groupe groupe;
-
-  @JoinColumn(name = "fkFonction", referencedColumnName = "pkFonction")
-  @ManyToOne
-  private Fonction fonction;
-
-  public Activite() {
-  }
 
   @Override
   public String toString() {
     return conseil
-      + ((groupe != null) ? ", " + groupe + " -" + fonction + "-" : "")
+      + ((groupe != null && !groupe.getAbrev().equals("?")) ? ", " + groupe : "")
       + ((dateEntree != null || dateSortie != null) ? ", (" : "")
       + ((dateEntree != null) ? DateTimeLib.dateToString(dateEntree) : "")
       + ((dateSortie != null) ? " - " + DateTimeLib.dateToString(dateSortie) : "")
       + ((dateEntree != null || dateSortie != null) ? ")" : "");
+  }
+
+  public String toString2() {
+    return InObject.fieldsToString(this);
   }
 
 }

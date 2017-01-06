@@ -10,6 +10,10 @@ mvn test
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
+New in release 5.1.3 (5.1.2017) :
+* Correct a bug in "inserList" and "updateList" (a flush is added to have a sorted list correct inserted).
+* The tests are now adapted to new "parlement" database structure (version 2017)
+
 New in release 5.1.2 (31.12.2016) :
 * Correct a bug in initialisation of Transaction class : if a transaction is currently active, set autocommit flag to true immediatly. This preserve some tenancy properties stored in the current entity-manager transaction.
 * Add NoTransactionJpa annotation in ch.emf.dao. It's for DbWorkerAPI classes to mark non JPA methods.

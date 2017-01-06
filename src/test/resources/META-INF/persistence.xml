@@ -5,13 +5,13 @@
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     -->
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>models.Fonction</class>
     <class>models.Conseiller</class>
     <class>models.Activite</class>
     <class>models.Conseil</class>
     <class>models.Groupe</class>
-    <class>models.Parti</class>
+    <class>models.EtatCivil</class>
     <class>models.Canton</class>
+    <class>models.Parti</class>
     <class>models.Login</class>
     <properties>
       <property name="eclipselink.logging.level" value="WARNING"/>
