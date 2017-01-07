@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 @Table(name = "t_canton")
 @Data
 @EqualsAndHashCode(of="pkCanton", callSuper=false)
-public class Canton implements Serializable,Comparable<Canton> {
+public class Canton implements Serializable, Comparable<Canton> {
   private static final long serialVersionUID = 1L;
 
   @Id
