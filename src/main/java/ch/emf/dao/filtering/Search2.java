@@ -129,7 +129,7 @@ public class Search2 {
   }
 
   public void addFilterIsEmpty(String fieldName) {
-    addFilterNoValue(Operator.IS_EMPTY.getOp(), fieldName);
+    addFilterNoValue(Operator.IS_EMPTY.getOp(), fieldName); 
   }
 
   public void addFilterIsNotEmpty(String fieldName) {

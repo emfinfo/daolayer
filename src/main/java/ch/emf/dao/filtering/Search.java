@@ -316,7 +316,7 @@ public class Search {
   public void addFilterIsNotEmpty( String fieldName ) {
     addFilterIsNotEmpty(findField(fieldName));
   }
-
+ 
   public void addFilterAnd() {
     addFilter(Filter.and());
   }
