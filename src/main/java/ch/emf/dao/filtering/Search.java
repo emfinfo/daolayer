@@ -76,7 +76,7 @@ public class Search {
   public List<Filter> getFilters() {
     return filters;
   }
-  
+
   public void setFilters(List<Filter> filters) {
     this.filters = filters;
   }
@@ -84,7 +84,7 @@ public class Search {
   public List<Sort> getSorts() {
     return sorts;
   }
-  
+
   public void setSort(List<Sort> sorts) {
     this.sorts = sorts;
   }
@@ -261,12 +261,12 @@ public class Search {
     addFilterIlike(findField(fieldName), value);
   }
 
-  public void addFilterBetween( Field field, Object value1, Object value2 ) {
-    addFilter(Filter.between(field, value1, value2));
+  public void addFilterBetween( Field field, Object startValue, Object endValue ) {
+    addFilter(Filter.between(field, startValue, endValue));
   }
 
-  public void addFilterBetween( String fieldName, Object value1, Object value2 ) {
-    addFilterBetween(findField(fieldName), value1, value2);
+  public void addFilterBetween( String fieldName, Object startValue, Object endValue ) {
+    addFilterBetween(findField(fieldName), startValue, endValue);
   }
 
   public void addFilterIn( Field field, Object... values ) {
@@ -458,7 +458,7 @@ public class Search {
       havingConditions.add(condition.replace("(*)", "(e)"));
     }
   }
-  
+
   public void addHavingConditions( String... conditions ) {
     if (conditions != null) {
       for (String cond : conditions) {

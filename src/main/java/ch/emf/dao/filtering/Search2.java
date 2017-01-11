@@ -49,55 +49,71 @@ public class Search2 {
     addAnd = this.jpql.toLowerCase().contains(" where ");
   }
 
+  private void startOp() {
+    if (addAnd) {
+      jpql += " and ";
+    } else {
+      jpql += " where ";
+    }
+    addAnd = true;
+  }
+
+  public void addSimpleFilter(String op, String fieldName, Object value) {
+    n++;
+    values.add(value);
+    jpql += fieldName + op + "?" + n;
+  }
+
   public void addFilter(String op, String fieldName, Object value) {
     if (value != null) {
-      n++;
-      values.add(value);
-      if (addAnd) {
-        jpql += " and ";
-      } else {
-        jpql += " where ";
-      }
-      addAnd = true;
-      jpql += fieldName + op + "?" + n;
+      startOp();
+      addSimpleFilter(op, fieldName, value);
     }
   }
 
   public void addFilterNoValue(String op, String fieldName) {
-    if (addAnd) {
-      jpql += " and ";
+    startOp();
+    jpql += fieldName + " " + op;
+  }
+
+  public void addFilterEqual(String fieldName, Object value) {
+    addFilter(Operator.EQUAL.getOp(), fieldName, value);
+  }
+
+  public void addFilterEqual(String fieldName, Object value1, Object value2) {
+    if (value1 != null && value2 != null) {
+      startOp();
+      jpql += "(";
+      addSimpleFilter(Operator.EQUAL.getOp(), fieldName, value1);
+      jpql += " or ";
+      addSimpleFilter(Operator.EQUAL.getOp(), fieldName, value2);
+      jpql += ")";
     }
-    addAnd = true;
-    jpql += fieldName + op;
   }
 
-  public void addFilterEqual(String fieldName, Object obj) {
-    addFilter(Operator.EQUAL.getOp(), fieldName, obj);
+  public void addFilterNotEqual(String fieldName, Object value) {
+    addFilter(Operator.NOT_EQUAL.getOp(), fieldName, value);
   }
 
-  public void addFilterNotEqual(String fieldName, Object obj) {
-    addFilter(Operator.NOT_EQUAL.getOp(), fieldName, obj);
+  public void addFilterLessThan(String fieldName, Object value) {
+    addFilter(Operator.LESS_THAN.getOp(), fieldName, value);
   }
 
-  public void addFilterLessThan(String fieldName, Object obj) {
-    addFilter(Operator.LESS_THAN.getOp(), fieldName, obj);
+  public void addFilterLessOrEqual(String fieldName, Object value) {
+    addFilter(Operator.LESS_OR_EQUAL.getOp(), fieldName, value);
   }
 
-  public void addFilterLessOrEqual(String fieldName, Object obj) {
-    addFilter(Operator.LESS_OR_EQUAL.getOp(), fieldName, obj);
+  public void addFilterGreatherThan(String fieldName, Object value) {
+    addFilter(Operator.GREATER_THAN.getOp(), fieldName, value);
   }
 
-  public void addFilterGreatherThan(String fieldName, Object obj) {
-    addFilter(Operator.GREATER_THAN.getOp(), fieldName, obj);
+  public void addFilterGreaterOrEqual(String fieldName, Object value) {
+    addFilter(Operator.GREATER_OR_EQUAL.getOp(), fieldName, value);
   }
 
-  public void addFilterGreaterOrEqual(String fieldName, Object obj) {
-    addFilter(Operator.GREATER_OR_EQUAL.getOp(), fieldName, obj);
-  }
-
-  public void addFilterBetween(String fieldName, Object obj1, Object obj2) {
-    addFilter(" " + Operator.BETWEEN.getOp() + " ", fieldName, obj1);
-    addFilter("", "", obj2);
+  public void addFilterBetween(String fieldName, Object startValue, Object endValue) {
+    addFilter(" " + Operator.BETWEEN.getOp() + " ", fieldName, startValue);
+    addFilter("", "", endValue);
   }
 
   public void addFilterLike(String fieldName, String s) {
@@ -105,19 +121,35 @@ public class Search2 {
   }
 
   public void addFilterIsNull(String fieldName) {
-    addFilterNoValue(" " + Operator.IS_NULL.getOp(), fieldName);
+    addFilterNoValue(Operator.IS_NULL.getOp(), fieldName);
   }
 
   public void addFilterIsNotNull(String fieldName) {
-    addFilterNoValue(" " + Operator.IS_NOT_NULL.getOp(), fieldName);
+    addFilterNoValue(Operator.IS_NOT_NULL.getOp(), fieldName);
   }
 
   public void addFilterIsEmpty(String fieldName) {
-    addFilterNoValue(" " + Operator.IS_EMPTY.getOp(), fieldName);
+    addFilterNoValue(Operator.IS_EMPTY.getOp(), fieldName);
   }
 
   public void addFilterIsNotEmpty(String fieldName) {
-    addFilterNoValue(" " + Operator.IS_NOT_EMPTY.getOp(), fieldName);
+    addFilterNoValue(Operator.IS_NOT_EMPTY.getOp(), fieldName);
+  }
+
+  public void addFilterAnd() {
+    jpql += " and ";
+  }
+
+  public void addFilterOr() {
+    jpql += " or ";
+  }
+
+  public void addFilterOpenParenthesis() {
+    jpql += "(";
+  }
+
+  public void addFilterCloseParenthesis() {
+    jpql += ")";
   }
 
   public void addGroupByField(String fieldName) {
@@ -159,7 +191,7 @@ public class Search2 {
   }
 
   public String getJpql() {
-//    System.out.println("*** JPQL = " + jpql);
+    System.out.println("*** JPQL = " + jpql);
     return jpql;
   }
 
