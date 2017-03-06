@@ -99,7 +99,7 @@ public class JpaDaoTest {
   private Conseiller getNewConseiller() {
     Conseiller c = new Conseiller();
     c.setActif(true);
-    c.setDateNaissance(DateTimeLib.stringToDate("1.1.1970"));
+    c.setDateNaissance(DateTimeLib.parseDate("1.1.1970"));
     c.setDateDeces(null);
     c.setPrenom("Jules");
     c.setNom("Tartampion");

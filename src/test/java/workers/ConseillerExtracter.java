@@ -47,9 +47,9 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
       cons.setCantonNaissance(tab[13].trim());
       cons.setMandats(tab[14].trim());
       cons.setCitoyennete(tab[17].trim());
-      cons.setDateNaissance(DateTimeLib.isoStringToDate(tab[18]));
+      cons.setDateNaissance(DateTimeLib.parseIsoDate(tab[18]));
       if (tab.length >= 20) {
-        cons.setDateDeces(DateTimeLib.isoStringToDate(tab[19]));
+        cons.setDateDeces(DateTimeLib.parseIsoDate(tab[19]));
       }
 
       // canton
@@ -120,8 +120,8 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
 
       // activite
       Activite activite = new Activite();
-      activite.setDateEntree(DateTimeLib.isoStringToDate(tab[15]));
-      activite.setDateSortie(DateTimeLib.isoStringToDate(tab[16]));
+      activite.setDateEntree(DateTimeLib.parseIsoDate(tab[15]));
+      activite.setDateSortie(DateTimeLib.parseIsoDate(tab[16]));
       cons.setActivite(activite);
 
 //      System.out.println(cons.toString2());
