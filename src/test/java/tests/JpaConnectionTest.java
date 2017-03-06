@@ -34,7 +34,7 @@ public class JpaConnectionTest {
       System.out.println("persistence file: " + url);
       System.out.println("Is Hibernate: " + isHibernate);
 //    HibernateUtil.getSessionFactory();
-    } catch (Exception e) {
+    } catch (ClassNotFoundException e) {
     }
     jpaConn = new JpaConnection();
     System.out.println("\n>>> " + StackTracer.getCurrentClass() + " <<<");
