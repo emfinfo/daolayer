@@ -30,7 +30,7 @@ New in release 5.1.0 (11.10.2016) :
 
 New in release 5.0.37 (01.10.2016) :
 * The "update" and "delete" methods returns now -1 if a concurrent access occurs. In JPA, you must add a @Version annotation on an "version" integer field in each class-entity where update or delete is possible.
-* Change release numbering from MAJOR.MINOR to MAJOR.MINOR.PATCH.
+* Change release numbering from MAJOR.PATCH to MAJOR.MINOR.PATCH.
 
 New in release 5.36 (17.08.2016) :
 * "getMaxStringValue" is now deleted from JpaDaoAPI.
