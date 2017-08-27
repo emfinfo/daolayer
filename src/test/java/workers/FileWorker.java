@@ -50,6 +50,7 @@ public class FileWorker {
 
     // on remplit les hashmap
     for (Conseiller c : conseillers) {
+      System.out.println(c);
       mapEtatsCivils.put(c.getEtatCivil().getAbrev(), c.getEtatCivil());
       mapCantons.put(c.getCanton().getAbrev(), c.getCanton());
       mapPartis.put(c.getParti().getAbrev(), c.getParti());
