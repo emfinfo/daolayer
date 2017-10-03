@@ -11,7 +11,7 @@ Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
 New in release 5.1.5 (3.10.2017) :
-* Search2 class has been redesigned (you can now define the logical operator by default between the various filters.
+* Search2 class has been redesigned : you can now define the logical operator by default between the various filters.
 Or even delete it. Javadoc has been added.
 
 New in release 5.1.4 (12.1.2017) :
