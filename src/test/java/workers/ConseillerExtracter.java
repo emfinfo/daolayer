@@ -32,7 +32,7 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
 //  }
 
   @Override
-  public Conseiller textToBean(String line) {
+  public Conseiller textToBean(int idx, String line) {
     String[] tab = line.split(sep);
     Conseiller cons = new Conseiller();
 
@@ -126,6 +126,8 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
 
 //      System.out.println(cons.toString2());
 
+    } else {
+      System.out.println(idx+". " + line);
     }
     return cons;
   }
