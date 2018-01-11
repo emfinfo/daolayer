@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `parlement` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `parlement`;
+CREATE DATABASE  IF NOT EXISTS `strittjc_parlement` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `strittjc_parlement`;
 -- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
 -- Host: localhost    Database: parlement

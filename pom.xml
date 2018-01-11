@@ -16,10 +16,16 @@
 
   <!-- additional repository -->
   <repositories>
-    <repository>
+    <!--    <repository>
       <id>emfinfo</id>
       <name>emfinfo.github.io</name>
       <url>http://emfinfo.github.io/javalibs/releases</url>
+    </repository>-->
+    <repository>
+      <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+      <id>eclipselink</id>
+      <layout>default</layout>
+      <name>Repository for library EclipseLink</name>
     </repository>
   </repositories>
 

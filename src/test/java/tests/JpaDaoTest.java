@@ -39,7 +39,7 @@ import workers.FileWorker;
 public class JpaDaoTest {
   private static final String PU = "parlementPU";
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2017_11_20.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2017_11_27.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
