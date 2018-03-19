@@ -13,6 +13,7 @@ http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 New in release 5.2.0 (19.03.2018) :
 * JpaConnectionAPI have a new method "isOnServer()"
 * This method is used in getList methods to optimize traitement for local and server application
+* Correction of a big bug in method "setEntityManager" in JpaDao (crash with multiple requests in PlayFramework)
 
 New in release 5.1.5 (3.10.2017) :
 * Search2 class has been redesigned : you can now define the logical operator by default between the various filters.
