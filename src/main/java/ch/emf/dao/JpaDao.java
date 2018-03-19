@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
 import javax.ejb.EJBContext;
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
@@ -109,7 +110,8 @@ public class JpaDao implements JpaDaoAPI {
     Query query = null;
     try {
       query = em.createQuery(jpql);
-    } catch (Exception e) {
+    } catch (Exception ex) {
+      Logger.error(clazz, ex.getMessage());
     }
     if (query != null && params != null && params.length > 0) {
       for (int i = 0; i < params.length; i++) {
@@ -219,11 +221,9 @@ public class JpaDao implements JpaDaoAPI {
     if (jpaConn == null) {
       jpaConn = new JpaConnection();
     }
-    if (!jpaConn.isConnected()) {
-      this.em = jpaConn.connect(em, ctx.getUserTransaction());
-      tr = jpaConn.getTransaction();
-      readEntities(this.em);
-    }
+    this.em = jpaConn.connect(em, ctx.getUserTransaction());
+    tr = jpaConn.getTransaction();
+    readEntities(this.em);
   }
 
   /**
@@ -237,11 +237,9 @@ public class JpaDao implements JpaDaoAPI {
     if (jpaConn == null) {
       jpaConn = new JpaConnection();
     }
-    if (!jpaConn.isConnected()) {
-      this.em = jpaConn.connect(em);
-      tr = jpaConn.getTransaction();
-      readEntities(this.em);
-    }
+    this.em = jpaConn.connect(em);
+    tr = jpaConn.getTransaction();
+    readEntities(this.em);
   }
 
   /**
@@ -460,11 +458,13 @@ public class JpaDao implements JpaDaoAPI {
   @SuppressWarnings("unchecked")
   private <E> E getSingleResult(Query query) {
     E result = null;
-    try {
-      result = (E) query.getSingleResult();
-    } catch (NoResultException ex) {
-    } catch (Exception ex) {
-      Logger.error(clazz, ex.getMessage());
+    if (query != null) {
+      try {
+        result = (E) query.getSingleResult();
+      } catch (NoResultException ex) {
+      } catch (Exception ex) {
+        Logger.error(clazz, ex.getMessage());
+      }
     }
     return result;
   }
@@ -531,25 +531,30 @@ public class JpaDao implements JpaDaoAPI {
   @SuppressWarnings("unchecked")
   private <E> List<E> getList(Query query, int firstResult, int maxResults) {
     List<E> list = new ArrayList<>();
-    if (firstResult >= 0) {
-      query.setFirstResult(firstResult);
-    }
-    if (maxResults > 0) {
-      query.setMaxResults(maxResults);
-    }
-    try {
-      query.setHint("javax.persistence.cache.storeMode", "REFRESH");
-      list = Collections.synchronizedList(query.getResultList());
+    if (query != null) {
+      if (firstResult >= 0) {
+        query.setFirstResult(firstResult);
+      }
+      if (maxResults > 0) {
+        query.setMaxResults(maxResults);
+      }
+      try {
+        if (jpaConn.isOnServer()) {
+          list = query.getResultList();
+        } else {
+          query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+          list = Collections.synchronizedList(query.getResultList());
+        }
 
-      // détache la liste en démarrant une transaction bidon
-      tr.beginManualTransaction();
-      tr.commitManualTransaction();
-      tr.finishManualTransaction();
-//      System.out.println("JpaDao getList: list is managed = "+ isMerged(list));
-
-    } catch (NoResultException ex) {
-    } catch (Exception ex) {
-      Logger.error(clazz, ex.getMessage());
+        // détache la liste en démarrant une transaction bidon
+        tr.beginManualTransaction();
+        tr.commitManualTransaction();
+        tr.finishManualTransaction();
+//        System.out.println("JpaDao getList: list is managed = " + isMerged(list));
+      } catch (NoResultException ex) {
+      } catch (Exception ex) {
+        Logger.error(clazz, ex.getMessage());
+      }
     }
     return list;
   }
@@ -684,19 +689,26 @@ public class JpaDao implements JpaDaoAPI {
       } else {
         query = em.createNativeQuery(sql, rsMapping);
       }
-      if (params != null && params.length > 0) {
-        for (int i = 0; i < params.length; i++) {
-          query.setParameter(i + 1, params[i]);
+      if (query != null) {
+        if (params != null && params.length > 0) {
+          for (int i = 0; i < params.length; i++) {
+            query.setParameter(i + 1, params[i]);
+          }
         }
-      }
-      Logger.debug(clazz, sql);
-      list = Collections.synchronizedList(query.getResultList());
+        Logger.debug(clazz, sql);
 
-      // détache la liste en démarrant une transaction bidon
-      tr.beginManualTransaction();
-      tr.commitManualTransaction();
-      tr.finishManualTransaction();
+        if (jpaConn.isOnServer()) {
+          list = query.getResultList();
+        } else {
+          list = Collections.synchronizedList(query.getResultList());
+        }
+
+        // détache la liste en démarrant une transaction bidon
+        tr.beginManualTransaction();
+        tr.commitManualTransaction();
+        tr.finishManualTransaction();
 //      System.out.println("JpaDao native getList: list is managed = "+ isMerged(list));
+      }
 
     } catch (Exception ex) {
       Logger.error(clazz, ex.getMessage() + " - " + sql);
@@ -767,12 +779,14 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public int executeCommand(String sql) {
-    int n;
+    int n = 0;
     try {
       Query query = em.createNativeQuery(sql);
       Logger.debug(clazz, sql);
-      n = query.executeUpdate();
-      tr.commit();
+      if (query != null) {
+        n = query.executeUpdate();
+        tr.commit();
+      }
     } catch (Exception ex1) {
       n = 0;
       rollbackAfterError(ex1, true);

@@ -85,7 +85,8 @@ public interface JpaConnectionAPI {
           String pu, String dbDriver, String dbUrl, String dbUser, String dbPsw );
 
   /**
-   * Permet de spécifier l'entity-manager à cette couche lorsque la connexion   * est effectuée par une couche supérieure, par exemple par un serveur
+   * Permet de spécifier l'entity-manager à cette couche lorsque la connexion
+   * est effectuée par une couche supérieure, par exemple par un serveur
    * d'application tel que GlassFish.
    *
    * @param em une référence sur l'entity-manager
@@ -95,7 +96,8 @@ public interface JpaConnectionAPI {
   public EntityManager connect( EntityManager em, UserTransaction ut );
 
   /**
-   * Permet de spécifier l'entity-manager lorsque la connexion   * est effectuée par une couche supérieure telle que le framework
+   * Permet de spécifier l'entity-manager lorsque la connexion
+   * est effectuée par une couche supérieure telle que le framework
    * Play par exemple.
    *
    * @param em une référence sur l'entity-manager provenant de Play
@@ -160,4 +162,13 @@ public interface JpaConnectionAPI {
    * @return une chaîne avec la dernière erreur
    */
   public String getLastError();
+
+  /**
+   * Retourne un booléen indiquant si la connection s'est faite sur un serveur.
+   *
+   * @return true si la connection s'est faite sur un serveur, autrement false
+   */
+  public boolean isOnServer();
+
+
 }

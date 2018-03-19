@@ -1,4 +1,4 @@
-# daolayer 5.1.5 - october 2017
+# daolayer 5.2.0 - march 2018
 A dao layer over JPA. With this library, you work with objects and lists of objects. No sql. Select queries can be made with a Search or Search2 object.
 
 You can download and open this project in NetBeans 8.2. It's a Java 8 maven project. So, dependencies are loaded automaticly from maven central. There are some test classes where you can learn how to use this library.
@@ -9,6 +9,10 @@ mvn test
 
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
+
+New in release 5.2.0 (19.03.2018) :
+* JpaConnectionAPI have a new method "isOnServer()"
+* This method is used in getList methods to optimize traitement for local and server application
 
 New in release 5.1.5 (3.10.2017) :
 * Search2 class has been redesigned : you can now define the logical operator by default between the various filters.

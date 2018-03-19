@@ -20,7 +20,7 @@ import javax.transaction.UserTransaction;
  * @has 1 - 1 Transaction
  */
 public class JpaConnection implements JpaConnectionAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer V5.1.5 / 3.10.2017";
+  private final String DAOLAYER_VERSION = "DaoLayer V5.2.0 / 19.03.2018";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
   private String pu;
   private Properties props;
@@ -28,6 +28,7 @@ public class JpaConnection implements JpaConnectionAPI {
   private EntityManager em;
   private Transaction tr;
   private String lastError;
+  private boolean onServer;
 
   /**
    * Constructeur.
@@ -39,6 +40,7 @@ public class JpaConnection implements JpaConnectionAPI {
     em = null;
     tr = null;
     lastError = "";
+    onServer = false;
   }
 
   /**
@@ -124,6 +126,7 @@ public class JpaConnection implements JpaConnectionAPI {
     this.pu = pu;
     this.props = props;
     lastError = "";
+    onServer = false;
     if (!isConnected()) {
       try {
         if (props != null) {
@@ -188,6 +191,7 @@ public class JpaConnection implements JpaConnectionAPI {
       this.tr = new Transaction(ut);
       Logger.debug(getClass(), true);
     }
+    onServer = true;
     return this.em;
   }
 
@@ -205,6 +209,7 @@ public class JpaConnection implements JpaConnectionAPI {
       this.tr = new Transaction(em.getTransaction());
       Logger.debug(getClass(), true);
     }
+    onServer = true;
     return this.em;
   }
 
@@ -220,10 +225,9 @@ public class JpaConnection implements JpaConnectionAPI {
       }
       try {
         em.close();
-        emf.close();
-        em = null;
-        emf = null;
-        tr = null;
+        if (!isOnServer() && emf != null) {
+          emf.close();
+        }
       } catch (Exception ex) {
         ok = false;
       }
@@ -299,4 +303,15 @@ public class JpaConnection implements JpaConnectionAPI {
   public String getLastError() {
     return lastError;
   }
+
+  /**
+   * Retourne un booléen indiquant si la connection s'est faite sur un serveur.
+   *
+   * @return true si la connection s'est faite sur un serveur, autrement false
+   */
+  @Override
+  public boolean isOnServer() {
+    return onServer;
+  }
+
 }
