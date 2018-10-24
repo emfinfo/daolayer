@@ -1,4 +1,4 @@
-package ch.emf.dao;
+package ch.emf.dao.models;
 
 import ch.emf.dao.filtering.Filter;
 import ch.emf.dao.filtering.Operator;
