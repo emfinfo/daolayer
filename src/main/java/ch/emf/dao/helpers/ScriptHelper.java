@@ -1,4 +1,4 @@
-package ch.emf.file;
+package ch.emf.dao.helpers;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -75,7 +75,7 @@ public class ScriptHelper {
    * @return une liste de String contenant toutes les commandes SQL
    */
   public static List<String> readSqlScriptFile(String sqlScriptFileName) {
-    List<String> cmdList = new ArrayList<String>();
+    List<String> cmdList = new ArrayList<>();
     try {
       String sql = readTextFile(sqlScriptFileName, "UTF-8", true, true);
       String ls = System.getProperty("line.separator");

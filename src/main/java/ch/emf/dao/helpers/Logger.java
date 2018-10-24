@@ -1,4 +1,4 @@
-package ch.emf.dao;
+package ch.emf.dao.helpers;
 
 import org.slf4j.LoggerFactory;
 

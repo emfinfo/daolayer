@@ -1,7 +1,8 @@
-package ch.emf.dao;
+package ch.emf.dao.transactions;
 
 import javax.persistence.EntityTransaction;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -81,7 +82,7 @@ public class Transaction {
   private boolean isUserTransactionActive() {
     try {
       return ut.getStatus() == Status.STATUS_ACTIVE;
-    } catch (Exception e) {
+    } catch (SystemException e) {
       return false;
     }
   }

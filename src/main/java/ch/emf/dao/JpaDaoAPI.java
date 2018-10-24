@@ -1,14 +1,15 @@
 package ch.emf.dao;
 
+import ch.emf.dao.models.EntityInfo;
 import ch.emf.dao.filtering.Search;
 import ch.emf.dao.filtering.Search2;
+import ch.emf.dao.conn.Connectable;
+import com.google.inject.ImplementedBy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.ejb.EJBContext;
-import javax.persistence.EntityManager;
 
 /**
  * Interface définissant une série de services proposées lors d'une gestion
@@ -18,95 +19,70 @@ import javax.persistence.EntityManager;
  *
  * @opt nodefillcolor palegreen
  * @opt all
- * @note V5.2.0
- * @note 19.03.2018
+ * @note V6.0.0
+ * @note 24.10.2018
  */
+@ImplementedBy(JpaDao.class) 
 public interface JpaDaoAPI {
+  
+  
+  /**
+   * Retourne la version courante de l'implémentation JpaDao.
+   *
+   * @return la version de l'implémentation JpaDao
+   */
+  String getVersion();
+  
+  /**
+   * Set une connection. Permet d'utiliser ensuite les méthodes getEm() et getTr(). 
+   * 
+   * @param conn une connextion valide implépmentant les méthodes
+   */
+  void setConnection(Connectable conn);
+  
 
   /**
-   * Ouvre la persistance en spécifiant un nom d'unité de persistance.
-   * Ce nom est une identification contenue dans le fichier "persistence.xml".
+   * Retourne une référence sur l'objet "Connectable".
    *
-   * @param pu un nom d'unité de persistance JPA (ex: "MySqlPU")
+   * @return une référence sur l'objet de connexion
    */
-  void open(String pu); // standard
-
+  Connectable getConnection();  
+  
+  
+  
   /**
-   * Ouvre la persistance en spécifiant par la variable "props" quelques
-   * propriétés qui supplantent les informations contenues dans le fichier
-   * persistence.xml.<br>
-   * Ces propriétés doivent être initialisées avant l'appel à cette méthode:<br>
-   * <pre>
-   *   String prefixKey = "eclipselink.jdbc.";
-   *   Properties props = new Properties();
-   *   props.put(prefixKey + "driver", driver);
-   *   props.put(prefixKey + "url", url);
-   *   props.put(prefixKey + "user", user);
-   *   props.put(prefixKey + "password", psw);
-   * </pre>
+   * Crée un objet avec les propriétés de la connexion. <br>
+   * Attention, dans l'état actuel crée un objet pour JPA "EclipseLink".
    *
-   * @param pu identifiant de l'unité de persistance
-   * @param props une liste de propriétés pour la connexion
-   */
-  void open(String pu, Properties props); // standard avec properties
-
-  /**
-   * Permet de passer directement un objet "entity-manager" à la couche JpaDao
-   * lorsque celui-ci est créé par une autre couche, par exemple par
-   * un "serveur d'application" tel que GlassFish et son support
-   * des transactions JTA.<br>
-   * <br>
-   * Pour utiliser correctement :<br>
-   * - Avant une classe de type session bean, insérer :<br>
-   * <code>&#064;TransactionManagement(TransactionManagementType.BEAN)</code><br>
-   * - Après la récupération de l'entity manager (em), insérer encore :<br>
-   * <code>&#064;Resource</code><br>
-   * <code>private EJBContext context;</code><br>
-   * - Passer ensuite les informations à cette méthode
+   * @param dbDriver pilote JDBC
+   * @param dbUrl URL vers la base de données
+   * @param dbUser nom d'utlisateur de la base de données
+   * @param dbPsw mot de passe pour accéder à la base
    *
-   * @param em un objet "entity manager" de JPA
-   * @param ctx le contexte EJB
+   * @return un objet de type "Properties"
    */
-  void setEntityManager(EntityManager em, EJBContext ctx); // Glassfish
-
-  /**
-   * Permet de passer directement un objet "entity-manager" à la couche JpaDao,
-   * lorsque celui-ci provient d'une autre couche, tel un serveur "Play framework".
-   *
-   * @param em un objet "entity-manager" de JPA déjà lié à une base de données
-   */
-  void setEntityManager(EntityManager em); // Play
-
+  public Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPsw );
+  
   /**
    * Retourne true (vrai) si l'on est toujours connecté à la
    * couche de persistance et sa base de données.
    *
    * @return true si la connexion est déjà établie
    */
-  boolean isOpen();
+  boolean isConnected();
 
   /**
    * Retourne la dernière erreur de connexion rencontrée.
    *
    * @return une chaîne de caractère avec la dernière erreur rencontrée
    */
-  String getOpenError();
+//  String getOpenError();
 
   /**
-   * Ferme la persistance avec la base connectée.
+   * Déconnecte la persistance avec la base connectée.
    */
-  void close();
-
-
-
-
-  /**
-   * Retourne la version courante de cette couche d'intégration DAO-JPA.
-   *
-   * @return la version de l'implémentation JpaDao
-   */
-  String getVersion();
-
+  void disconnect();
+  
   /**
    * Retourne le chemin absolu où se trouve la base de données.
    * Cela permet d'y stocker des photos ou autres informations
@@ -115,24 +91,7 @@ public interface JpaDaoAPI {
    * @param appPath le chemin vers l'application appelante
    * @return le chemin absolu vers la base de données
    */
-  String getDataBasePath(String appPath);
-
-  /**
-   * Retourne une référence sur l'objet "entity manager" de JPA. Normalement,
-   * cet objet est encapsulé dans cette couche et n'a pas à être appelé.
-   *
-   * @return une référence sur l'objet "entity manager" de JPA
-   */
-  EntityManager getEntityManager();
-
-  /**
-   * Retourne une instance sur le gestionnaire de transactions.
-   * Normalement, cet objet est encapsulé dans cette couche et
-   * n'a pas à être appelé directement.
-   *
-   * @return une référence sur l'objet qui gère les transactions
-   */
-  Transaction getTransaction();
+  String getDataBasePath(String appPath);    
 
 
 
