@@ -1,7 +1,10 @@
-package workers;
+package helpers;
 
-import ch.emf.dao.Transaction;
+import ch.emf.dao.transactions.Transaction;
+import ch.emf.dao.filtering.Search;
+import ch.emf.dao.JpaDaoAPI;
 import ch.jcsinfo.file.TextFileReader;
+import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,15 +19,17 @@ import models.Groupe;
 import models.Parti;
 
 /**
- *
+ * Classe pour reconstituer la base de données des conseillers
+ * d'après un fichier csv.
+ * 
  * @author jcstritt
  */
-public class FileWorker {
+public class DbRebuilder {
+  private JpaDaoAPI dao;
 
-  DbWorkerAPI dbWrk;
-
-  public FileWorker() {
-    dbWrk = DbWorker.getInstance();
+  @Inject
+  public DbRebuilder(JpaDaoAPI dao) {
+    this.dao = dao;
   }
 
   public boolean importerDonneesFichier(String fileName) {
@@ -84,11 +89,11 @@ public class FileWorker {
 
     // ajout dans la BD
     System.out.println("  - ajout des listes simples dans la BD ...");
-    n[0] = dbWrk.ajouterEtatsCivils(etatsCivils);
-    n[1] = dbWrk.ajouterCantons(cantons);
-    n[2] = dbWrk.ajouterPartis(partis);
-    n[3] = dbWrk.ajouterConseils(conseils);
-    n[4] = dbWrk.ajouterGroupes(groupes);
+    n[0] = dao.insertList(EtatCivil.class, etatsCivils, false);
+    n[1] = dao.insertList(Canton.class, cantons, false);
+    n[2] = dao.insertList(Parti.class, partis, false);
+    n[3] = dao.insertList(Conseil.class,conseils, false);
+    n[4] = dao.insertList(Groupe.class, groupes, false);
 
     // maj des hashmap avec les objets de la BD
     for (EtatCivil ec : etatsCivils) {
@@ -117,26 +122,49 @@ public class FileWorker {
 
     // ajout des conseillers dans la BD et maj de la hashmap avec les objets de la BD
     System.out.println("  - ajout des conseillers dans la BD ...");
-    n[5] = dbWrk.ajouterConseillers(conseillers2);
+    n[5] = dao.insertList(Conseiller.class, conseillers2, false);
     for (Conseiller c2 : conseillers2) {
       mapConseillers.replace(c2.getKey(), c2);
     }
 
     System.out.println("  - ajout des activités dans la BD ...");
-    Transaction tr = dbWrk.demarrerTransaction();
+    Transaction tr = dao.getConnection().getTr();
+    tr.beginManualTransaction();
     int i = 0;
     for (Conseiller c : conseillers) {
       Activite act = c.getActivite();
       act.setConseil(mapConseils.get(c.getConseil().getAbrev()));
       act.setGroupe(mapGroupes.get(c.getGroupe().getAbrev()));
       act.setConseiller(mapConseillers.get(c.getKey()));
-      n[6] += dbWrk.ajouterActivite(act);
+      n[6] += ajouterActivite(act);
     }
-    dbWrk.terminerTransaction(tr);
+    try {
+      tr.commitManualTransaction();
+    } catch (Exception ex) {
+    }
+    tr.finishManualTransaction();    
     System.out.println("Fin de la reconstitution de la BD ... " + n[6]);
 
     // résultat
     return n[0] > 0 && n[1] > 0 && n[2] > 0 && n[3] > 0 && n[4] > 0 && n[5] > 0 && n[6] > 0;
   }
 
+  private int ajouterActivite(Activite activite) {
+    Search s = new Search(Activite.class);
+    s.addFilterEqual("dateEntree", activite.getDateEntree());
+    s.addFilterAnd();
+    s.addFilterEqual("dateSortie", activite.getDateSortie());
+    s.addFilterAnd();
+    s.addFilterEqual("conseiller", activite.getConseiller());
+    s.addFilterAnd();
+    s.addFilterEqual("conseil", activite.getConseil());
+    s.addFilterAnd();
+    s.addFilterEqual("groupe", activite.getGroupe());
+    int n = 0;
+    if (dao.getSingleResult(s) == null) {
+      n = dao.create(activite);
+    }
+    return n;
+  }  
+  
 }

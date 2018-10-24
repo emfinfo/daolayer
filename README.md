@@ -1,4 +1,4 @@
-# daolayer 5.2.0 - march 2018
+# daolayer 6.0.0 - october 2018
 A dao layer over JPA. With this library, you work with objects and lists of objects. No sql. Select queries can be made with a Search or Search2 object.
 
 You can download and open this project in NetBeans 8.2. It's a Java 8 maven project. So, dependencies are loaded automaticly from maven central. There are some test classes where you can learn how to use this library.
@@ -9,6 +9,12 @@ mvn test
 
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
+
+New in release 6.0.0 (24.10.2018) :
+* Use of Google Guice for dependency injection
+* See tests initialisation to see an injection by Guice
+* The JpaDaoAPI interface if far the same, but use a new "setConnection" to set a connection.
+* To use with a framework that give you the entitymanager, you must create your own connection class and create a DaoRepository class to make the connection. @see the "conseillers" application on https://github.com/emfinfo.
 
 New in release 5.2.0 (19.03.2018) :
 * JpaConnectionAPI have a new method "isOnServer()"

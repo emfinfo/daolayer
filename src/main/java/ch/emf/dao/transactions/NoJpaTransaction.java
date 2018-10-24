@@ -1,4 +1,4 @@
-package ch.emf.dao;
+package ch.emf.dao.transactions;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
