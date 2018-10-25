@@ -9,10 +9,11 @@ public class JpaException extends Exception {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Constructeur.
+   * Constructor.
    * 
-   * @param methodName class and method name
-   * @param msg error or other information
+   * @param className the class name
+   * @param methodName the methodName
+   * @param msg the error message
    */
   public JpaException(String className,  String methodName, String msg) {
     super("JPA error detected in: " + methodName + ", class: " + className + "\n" + msg);
