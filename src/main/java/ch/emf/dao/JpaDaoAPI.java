@@ -40,7 +40,6 @@ public interface JpaDaoAPI {
    */
   void setConnection(Connectable conn);
   
-
   /**
    * Retourne une référence sur l'objet "Connectable".
    *
@@ -48,7 +47,18 @@ public interface JpaDaoAPI {
    */
   Connectable getConnection();  
   
-  
+  /**
+   * Détermine si une connexion existe avec un entity-manager valide.
+   * 
+   * @return true si une connexioon valide a été trouvée
+   */
+   boolean isConnected();
+   
+  /**
+   * Se déconnecte au besoin si une connexion existe.
+   */
+  void disconnect();
+   
   
   /**
    * Crée un objet avec les propriétés de la connexion. <br>
@@ -61,27 +71,7 @@ public interface JpaDaoAPI {
    *
    * @return un objet de type "Properties"
    */
-  public Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPsw );
-  
-  /**
-   * Retourne true (vrai) si l'on est toujours connecté à la
-   * couche de persistance et sa base de données.
-   *
-   * @return true si la connexion est déjà établie
-   */
-  boolean isConnected();
-
-  /**
-   * Retourne la dernière erreur de connexion rencontrée.
-   *
-   * @return une chaîne de caractère avec la dernière erreur rencontrée
-   */
-//  String getOpenError();
-
-  /**
-   * Déconnecte la persistance avec la base connectée.
-   */
-  void disconnect();
+   Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPsw );
   
   /**
    * Retourne le chemin absolu où se trouve la base de données.
@@ -91,10 +81,10 @@ public interface JpaDaoAPI {
    * @param appPath le chemin vers l'application appelante
    * @return le chemin absolu vers la base de données
    */
-  String getDataBasePath(String appPath);    
+  String getConnectionPath(String appPath);    
 
 
-
+  
 
   /**
    * Ajoute un objet dans la persistance.
@@ -104,7 +94,7 @@ public interface JpaDaoAPI {
    *
    * @return =1 si l'objet a été créé dans la BD, =0 autrement
    */
-  public <E> int create(E e);
+   <E> int create(E e);
 
   /**
    * Pour la classe-entité spécifiée, lit un objet d'après sa PK.

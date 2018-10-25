@@ -52,8 +52,6 @@ public class JpaDao implements JpaDaoAPI {
     entitiesMap = new HashMap<>();
   }
   
-  
-  
   /**
    * Méthode privée pour lire une carte des classes-entités avec les 
    * principales informations.
@@ -61,7 +59,6 @@ public class JpaDao implements JpaDaoAPI {
    * @param em un entitymanager connu
    */
   private void readEntities(EntityManager em) {
-    Map<Class<?>, EntityInfo> map = new HashMap<>();
     if (em != null) {
       Logger.info(clazz, em.getMetamodel().getEntities().size(), clazz.getSimpleName());
       for (EntityType<?> entityType : em.getMetamodel().getEntities()) {
@@ -189,10 +186,12 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public void setConnection(Connectable conn) {
     this.conn = conn;
-    readEntities(conn.getEm());
+    if (conn != null) {
+      readEntities(conn.getEm());
+    }  
   }
   
-    /**
+  /**
    * Retourne une référence sur l'objet "Connectable".
    *
    * @return une référence sur l'objet de connexion
@@ -201,6 +200,27 @@ public class JpaDao implements JpaDaoAPI {
   public Connectable getConnection() {
     return conn;
   }
+  
+  /**
+   * Détermine si une connexion existe avec un entity-manager valide.
+   * 
+   * @return true si une connexioon valide a été trouvée
+   */
+  @Override
+  public boolean isConnected() {
+    return conn != null && conn.isConnected();
+  }
+  
+  
+  /**
+   * Se déconnecte au besoin si une connexion existe.
+   */
+  @Override
+  public void disconnect() {
+    if (conn != null) {
+      conn.disconnect();
+    } 
+  }  
 
   
   /**
@@ -224,25 +244,6 @@ public class JpaDao implements JpaDaoAPI {
     return props;
   }    
   
- /**
-   * Retourne true (vrai) si l'on est toujours connecté à la
-   * couche de persistance et sa base de données.
-   *
-   * @return true si la connexion est déjà établie
-   */
-  @Override
-  public boolean isConnected() {
-    return conn.isConnected();
-  }
-
-  /**
-   * Ferme la couche de persistance avec la base connectée.
-   */
-  @Override
-  public void disconnect() {
-    conn.disconnect();
-  }  
-  
   /**
    * Retourne le chemin absolu où se trouve la base de données.
    * Cela permet d'y stocker des photos ou autres informations
@@ -252,7 +253,7 @@ public class JpaDao implements JpaDaoAPI {
    * @return le chemin absolu vers la base de données
    */
   @Override
-  public String getDataBasePath(String appPath) {
+  public String getConnectionPath(String appPath) {
   
     // retrouve le chemin relatif depuis le fichier de persistance JPA
     String relPath = (String)conn.getEm().getProperties().get(JPA2_PREFIX_KEY + ".url");
@@ -392,8 +393,11 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   @SuppressWarnings("unchecked")
   public boolean exists(Class<?> cl, Object pk) {
-    Object e = conn.getEm().find(cl, pk);
-    boolean ok = e != null;
+    boolean ok = conn != null && conn.getEm() != null;
+    if (ok) {
+      Object e = conn.getEm().find(cl, pk);
+      ok = e != null;
+    }  
     return ok;
   }
 
@@ -1208,7 +1212,7 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public <E> boolean isMerged(E e) {
-    return conn.getEm().contains(e);
+    return e != null && conn != null && conn.getEm() != null && conn.getEm().contains(e);
   }
 
   /**
@@ -1223,7 +1227,7 @@ public class JpaDao implements JpaDaoAPI {
   public <E> boolean isMerged(List<E> list) {
     boolean merged = false;
     if (list != null && list.size() > 0) {
-      merged = conn.getEm().contains(list.get(0));
+      merged = isMerged(list.get(0));
     }
     return merged;
   }
@@ -1319,8 +1323,12 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public List<Field> getEntityFields(Class<?> cl) {
+    List<Field> fields = new ArrayList<>();
     EntityInfo ei = getEntityInfo(cl);
-    return ei.getFields();
+    if (ei != null) {
+      fields = ei.getFields();
+    }  
+    return fields;
   }
 
   /**

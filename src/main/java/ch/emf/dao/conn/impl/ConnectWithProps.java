@@ -2,6 +2,7 @@ package ch.emf.dao.conn.impl;
 
 import ch.emf.dao.transactions.Transaction;
 import ch.emf.dao.conn.Connectable;
+import ch.emf.dao.exceptions.JpaException;
 import ch.emf.dao.helpers.Logger;
 import java.util.Properties;
 import javax.persistence.EntityManager;
@@ -22,7 +23,7 @@ public class ConnectWithProps implements Connectable {
   private EntityManager em;
   private Transaction tr;
 
-  public ConnectWithProps(String pu, Properties props) {
+  public ConnectWithProps(String pu, Properties props) throws JpaException {
     this.pu = pu;
     em = null;
     tr = null;
@@ -32,6 +33,7 @@ public class ConnectWithProps implements Connectable {
       tr = new Transaction(em.getTransaction());
     } catch (Exception ex) {
       Logger.error(this.getClass(), ex.getMessage());       
+      throw new JpaException(this.getClass().getSimpleName(), "ConnectWithProps", ex.getMessage());
     }
   }
   

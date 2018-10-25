@@ -103,6 +103,16 @@
   <!-- build settings -->
   <build>
     <plugins>
+      
+  <!-- to display surefire test reports in target -->
+<!--      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.1</version>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>-->
+            
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <version>3.0.1</version> <!-- ok 24.10.2018 -->
@@ -255,6 +265,7 @@
           <useStandardDocletOptions>true</useStandardDocletOptions>
         </configuration>
       </plugin>
+            
     </plugins>
   </reporting>
 

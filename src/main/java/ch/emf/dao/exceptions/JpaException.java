@@ -11,11 +11,11 @@ public class JpaException extends Exception {
   /**
    * Constructeur.
    * 
-   * @param method class and method name
+   * @param methodName class and method name
    * @param msg error or other information
    */
-  public JpaException(String method, String msg) {
-    super("ERROR JPA in: " + method + "\n" + msg);
+  public JpaException(String className,  String methodName, String msg) {
+    super("JPA error detected in: " + methodName + ", class: " + className + "\n" + msg);
   }
 
   @Override

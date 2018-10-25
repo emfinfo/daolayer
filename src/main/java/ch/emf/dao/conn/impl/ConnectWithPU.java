@@ -2,6 +2,7 @@ package ch.emf.dao.conn.impl;
 
 import ch.emf.dao.transactions.Transaction;
 import ch.emf.dao.conn.Connectable;
+import ch.emf.dao.exceptions.JpaException;
 import ch.emf.dao.helpers.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -18,7 +19,7 @@ public class ConnectWithPU implements Connectable {
   private EntityManager em;
   private Transaction tr;  
   
-  public ConnectWithPU(String pu) {
+  public ConnectWithPU(String pu) throws JpaException {
     this.pu = pu;
     emf = null;
     em = null;
@@ -28,7 +29,7 @@ public class ConnectWithPU implements Connectable {
       em = emf.createEntityManager();
       tr = new Transaction(em.getTransaction());
     } catch (Exception ex) {
-      Logger.error(this.getClass(), ex.getMessage());       
+      throw new JpaException(this.getClass().getSimpleName(), "ConnectWithPU", ex.getMessage());
     }  
   }
   
