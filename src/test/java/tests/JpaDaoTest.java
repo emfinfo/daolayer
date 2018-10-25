@@ -66,7 +66,7 @@ public class JpaDaoTest {
     
     // teste d'un injection avec Guice
     Injector inj = Guice.createInjector(new GuiceModule());
-    dao = inj.getInstance(JpaDao.class);
+    dao = inj.getInstance(JpaDaoAPI.class);
     try {
       System.out.println(dao.getVersion());
       dao.setConnection(new ConnectWithPU("parlementPU"));

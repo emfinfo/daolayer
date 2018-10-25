@@ -14,13 +14,11 @@ import javax.persistence.Persistence;
  * @author jcstritt
  */
 public class ConnectWithPU implements Connectable {
-  private String pu;
   private EntityManagerFactory emf; 
   private EntityManager em;
   private Transaction tr;  
   
   public ConnectWithPU(String pu) throws JpaException {
-    this.pu = pu;
     emf = null;
     em = null;
     tr = null;

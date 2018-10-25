@@ -17,14 +17,12 @@ import javax.persistence.Persistence;
  * @author jcstritt
  */
 public class ConnectWithProps implements Connectable {
-  private String pu;
   private EntityManagerFactory emf; 
   private Properties props;
   private EntityManager em;
   private Transaction tr;
 
   public ConnectWithProps(String pu, Properties props) throws JpaException {
-    this.pu = pu;
     em = null;
     tr = null;
     try {
