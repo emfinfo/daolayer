@@ -10,7 +10,7 @@ mvn test
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
-New in release 6.0.0 (25.10.2018) :
+New in release 6.0.0 (26.10.2018) :
 * Use of Google Guice for dependency injection
 * See tests initialisation to see an injection by Guice
 * The JpaDaoAPI interface if far the same, but use a new "setConnection" to set a connection.

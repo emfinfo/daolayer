@@ -30,7 +30,6 @@ public class ConnectWithProps implements Connectable {
       em = emf.createEntityManager();
       tr = new Transaction(em.getTransaction());
     } catch (Exception ex) {
-      Logger.error(this.getClass(), ex.getMessage());       
       throw new JpaException(this.getClass().getSimpleName(), "ConnectWithProps", ex.getMessage());
     }
   }
