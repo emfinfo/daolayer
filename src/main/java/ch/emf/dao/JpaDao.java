@@ -1133,7 +1133,8 @@ public class JpaDao implements JpaDaoAPI {
 
 
   /**
-   * Supprime le contenu du cache JPA.
+   * Supprime le contenu du cache JPA.<br>
+   * Normalement, cette méthode ne devrait JAMAIS être appelée.
    */
   @Override
   public void clearCache() {
@@ -1141,7 +1142,8 @@ public class JpaDao implements JpaDaoAPI {
   }
 
   /**
-   * Supprime tout objet encore managé par JPA.
+   * Supprime tout objet encore managé par JPA.<br>
+   * Normalement, cette méthode ne devrait JAMAIS être appelée.
    */
   @Override
   public void clear() {

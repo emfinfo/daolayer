@@ -27,6 +27,10 @@
       <layout>default</layout>
       <name>Repository for library EclipseLink</name>
     </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
   </repositories>
 
   <!-- dependencies -->
@@ -66,7 +70,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.19</version>
+      <version>1.7.25</version>
     </dependency>
 
     <!-- dependencies for tests -->
@@ -87,7 +91,7 @@
     <dependency>
       <groupId>ch.emf.info</groupId>
       <artifactId>basiclib</artifactId>
-      <version>1.3.2</version>
+      <version>1.3.3</version>
       <scope>test</scope>
     </dependency>
 
@@ -170,7 +174,7 @@
 
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.9</version> <!-- avant 24.10.2018 version 2.9 -->
+        <version>3.0.0</version> <!-- avant 24.10.2018 version 2.9 -->
         <configuration>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
@@ -199,6 +203,7 @@
           </fileSets>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 
@@ -207,7 +212,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version> <!-- avant 24.10.2018 version 2.9 -->
+        <version>2.9</version> <!-- attention avec 3.0.1 umlgraph ne fonctionne plus -->
         <configuration>
           <tags>
             <tag>
@@ -245,23 +250,19 @@
           <docletArtifact>
             <groupId>org.umlgraph</groupId>
             <artifactId>umlgraph</artifactId>
-            <version>5.6.6</version><!-- avant 24.10.2018 version 5.6  -->
+            <version>5.6.6</version>
           </docletArtifact>
-          <additionalparam>-quiet</additionalparam>
           <additionalparam>-dotexecutable /usr/local/bin/dot</additionalparam>
-          <!--<additionalparam>-horizontal</additionalparam>-->
-          <!--<additionalparam>-all</additionalparam>-->
           <additionalparam>-nodefillcolor gray97</additionalparam>
           <additionalparam>-nodefontsize 9</additionalparam>
           <additionalparam>-nodefontclassname Monaco</additionalparam>
-          <additionalparam>-nodefontclassssize 14</additionalparam>
+          <additionalparam>-nodefontclasssize 14</additionalparam>
           <additionalparam>-nodesep 1.0</additionalparam>
           <additionalparam>-edgefontsize 48</additionalparam>
           <additionalparam>-edgefontcolor red</additionalparam>
           <additionalparam>-edgecolor forestgreen</additionalparam>
           <!--<additionalparam>-quiet -views -all -horizontal</additionalparam>-->
-          <additionalparam>-quiet -views -all</additionalparam>
-
+          <additionalparam>-quiet -all</additionalparam>
           <useStandardDocletOptions>true</useStandardDocletOptions>
         </configuration>
       </plugin>
@@ -272,6 +273,7 @@
   <!-- more project information -->
   <name>DaoLayer</name>
   <description>A dao layer to use JPA managed objects from a database.</description>
+
   <licenses>
     <license>
       <name>MIT License</name>
@@ -279,6 +281,7 @@
     </license>
   </licenses>
   <url>https://github.com/emfinfo/daolayer</url>
+
   <developers>
     <developer>
       <id>STT</id>

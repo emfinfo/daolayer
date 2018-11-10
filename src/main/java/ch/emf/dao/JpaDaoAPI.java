@@ -17,10 +17,11 @@ import java.util.Properties;
  *
  * @author Jean-Claude Stritt et Pierre-Alain Mettraux
  *
- * @opt nodefillcolor palegreen
- * @opt all
  * @note V6.0.1
  * @note 10.11.2018
+ *
+ * @opt nodefillcolor palegreen
+ * @opt all
  */
 @ImplementedBy(JpaDao.class)
 public interface JpaDaoAPI {
@@ -468,12 +469,14 @@ public interface JpaDaoAPI {
 
 
   /**
-   * Supprime le contenu du cache JPA (normalement ne doit pas être appelé).
+   * Supprime le contenu du cache JPA.<br>
+   * Normalement, cette méthode ne devrait JAMAIS être appelée.
    */
   void clearCache();
 
   /**
-   * Supprime tout objet encore managé par JPA.
+   * Supprime tout objet encore managé par JPA.<br>
+   * Normalement, cette méthode ne devrait JAMAIS être appelée.
    */
   void clear();
 
