@@ -469,14 +469,14 @@ public interface JpaDaoAPI {
 
 
   /**
-   * Supprime le contenu du cache JPA.<br>
-   * Normalement, cette méthode ne devrait JAMAIS être appelée.
+   * Supprime le contenu du cache JPA
+   * (normalement, cette méthode ne devrait JAMAIS être appelée).
    */
   void clearCache();
 
   /**
-   * Supprime tout objet encore managé par JPA.<br>
-   * Normalement, cette méthode ne devrait JAMAIS être appelée.
+   * Supprime tout objet encore managé par JPA
+   * (normalement, cette méthode ne devrait JAMAIS être appelée).
    */
   void clear();
 

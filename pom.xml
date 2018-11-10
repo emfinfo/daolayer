@@ -262,7 +262,7 @@
           <additionalparam>-edgefontcolor red</additionalparam>
           <additionalparam>-edgecolor forestgreen</additionalparam>
           <!--<additionalparam>-quiet -views -all -horizontal</additionalparam>-->
-          <additionalparam>-quiet -all</additionalparam>
+          <additionalparam>-quiet -views -all</additionalparam>
           <useStandardDocletOptions>true</useStandardDocletOptions>
         </configuration>
       </plugin>
