@@ -9,7 +9,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- * Connecte avec une "Persistence Unit" de JPA (fichier XML).
+ * Connecte avec une "Persistence Unit" de JPA (persistence.xml).
  *
  * @author jcstritt
  */
@@ -19,6 +19,12 @@ public class ConnectWithPU implements Connectable {
   private Transaction tr;
   private Class<?> clazz;
 
+  /**
+   * Constructeur.
+   *
+   * @param pu un nom d'unité de persistence
+   * @throws JpaException une exception à traiter en cas d'erreur
+   */
   public ConnectWithPU(String pu) throws JpaException {
     emf = null;
     em = null;
@@ -33,21 +39,40 @@ public class ConnectWithPU implements Connectable {
     }
   }
 
-  @Override
-  public boolean isConnected() {
-    return (em != null) && em.isOpen();
-  }
-
+  /**
+   * Retourne l'objet EntityManager mémorisé ici.
+   *
+   * @return l'objet en question
+   */
   @Override
   public EntityManager getEm() {
     return this.em;
   }
 
+  /**
+   * Retourne un objet Transaction mémorisé ici.
+   *
+   * @return l'objet en question
+   */
   @Override
   public Transaction getTr() {
     return this.tr;
   }
 
+  /**
+   * Détermine si l'objet EntityManager mémorisé est différent de null
+   * et actuellement ouvert sur une base de données.
+   *
+   * @return true si une connexion existe vers une BD
+   */
+  @Override
+  public boolean isConnected() {
+    return (em != null) && em.isOpen();
+  }
+
+  /**
+   * Méthode de déconnexion (ferme toutes les resources ouvertes dans le constructeur).
+   */
   @Override
   public void disconnect() {
     if (isConnected()) {

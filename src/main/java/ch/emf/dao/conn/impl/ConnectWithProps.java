@@ -10,9 +10,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- * Connecte avec une "Persistence Unit" de JPA et des propriétés spécifiées.
- * Elles proviennent généralement d'un fichier de configuration ou
- * de propriétés système mémorisées.
+ * Connecte avec une "Persistence Unit" de JPA (persistence.xml) et des
+ * propriétés supplémentaires qui surchargent l'une ou l'autre présente
+ * dans le fichier. Elles proviennent généralement d'un fichier de configuration
+ * ou de propriétés système mémorisées.
  *
  * @author jcstritt
  */
@@ -22,6 +23,13 @@ public class ConnectWithProps implements Connectable {
   private Transaction tr;
   private Class<?> clazz;
 
+  /**
+   * Constructeur.
+   *
+   * @param pu un nom d'unité de persistence
+   * @param props des propriétés sous la forme clé-valeur
+   * @throws JpaException une exception à traiter en cas d'erreur
+   */
   public ConnectWithProps(String pu, Properties props) throws JpaException {
     emf = null;
     em = null;
@@ -36,21 +44,40 @@ public class ConnectWithProps implements Connectable {
     }
   }
 
-  @Override
-  public boolean isConnected() {
-    return (em != null) && em.isOpen();
-  }
-
+  /**
+   * Retourne l'objet EntityManager mémorisé ici.
+   *
+   * @return l'objet en question
+   */
   @Override
   public EntityManager getEm() {
     return this.em;
   }
 
+  /**
+   * Retourne un objet Transaction mémorisé ici.
+   *
+   * @return l'objet en question
+   */
   @Override
   public Transaction getTr() {
     return this.tr;
   }
 
+  /**
+   * Détermine si l'objet EntityManager mémorisé est différent de null
+   * et actuellement ouvert sur une base de données.
+   *
+   * @return true si une connexion existe vers une BD
+   */
+  @Override
+  public boolean isConnected() {
+    return (em != null) && em.isOpen();
+  }
+
+  /**
+   * Méthode de déconnexion (ferme toutes les resources ouvertes dans le constructeur).
+   */
   @Override
   public void disconnect() {
     if (isConnected()) {
