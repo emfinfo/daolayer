@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * l'interface SLF4J et une implémentation LOG4J.
  * On peut aussi l'utiliser en dehors de la couche, puisque cette classe
  * ne contient que des méthodes statiques.
- * 
+ *
  * @author jcstritt
  *
  * @opt nodefillcolor LemonChiffon
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class Logger {
 
   private static final int LEVEL = -2;
-  private static final String SIMPLE_FORMAT = "{} [{}]";
+  private static final String SIMPLE_FORMAT = "{} -> {}";
 
   /**
    * Méthode privée pour récupérer le nom d'une méthode parente.
@@ -25,7 +25,12 @@ public class Logger {
   private static String getParentMethod( int level ) {
     StackTraceElement e[] = Thread.currentThread().getStackTrace();
     StackTraceElement trace = e[2 - level];
-    return trace.getMethodName();
+    String s = trace.getMethodName();
+    String t[] = s.split("[$]");
+    if (t.length == 3) {
+      s = t[1];
+    }
+    return s;
   }
 
   /**
@@ -44,18 +49,22 @@ public class Logger {
    * @param values les valeurs à afficher
    */
   private static void display( int which, Class<?> cl, Object msg, Object... values ) {
-    String format = SIMPLE_FORMAT + " - ";
+    String format = SIMPLE_FORMAT;
     Object[] tab = new Object[2 + values.length];
     tab[0] = Logger.getParentMethod(LEVEL);
     tab[1] = msg;
-    int i = 0;
-    for (Object value : values) {
-      format += "{}";
-      tab[i + 2] = value;
-      i++;
-      if (i < values.length) {
-        format += ", ";
+    if (values.length > 0) {
+      format += " (";
+      int i = 0;
+      for (Object value : values) {
+        format += "{}";
+        tab[i + 2] = value;
+        i++;
+        if (i < values.length) {
+          format += ", ";
+        }
       }
+      format += ")";
     }
     switch (which) {
       case 1:

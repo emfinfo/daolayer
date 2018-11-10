@@ -2,7 +2,7 @@ package ch.emf.dao.exceptions;
 
 /**
  * Exception JPA.
- * 
+ *
  * @author jcstritt
  */
 public class JpaException extends Exception {
@@ -10,13 +10,13 @@ public class JpaException extends Exception {
 
   /**
    * Constructor.
-   * 
+   *
    * @param className the class name
    * @param methodName the methodName
    * @param msg the error message
    */
-  public JpaException(String className,  String methodName, String msg) {
-    super("JPA error detected in: " + methodName + ", class: " + className + "\n" + msg);
+  public JpaException(String className, String methodName, String msg) {
+    super(methodName + " -> " + msg);
   }
 
   @Override

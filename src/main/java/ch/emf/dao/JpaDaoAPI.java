@@ -1,9 +1,9 @@
 package ch.emf.dao;
 
-import ch.emf.dao.models.EntityInfo;
+import ch.emf.dao.conn.Connectable;
 import ch.emf.dao.filtering.Search;
 import ch.emf.dao.filtering.Search2;
-import ch.emf.dao.conn.Connectable;
+import ch.emf.dao.models.EntityInfo;
 import com.google.inject.ImplementedBy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -19,47 +19,47 @@ import java.util.Properties;
  *
  * @opt nodefillcolor palegreen
  * @opt all
- * @note V6.0.0
- * @note 24.10.2018
+ * @note V6.0.1
+ * @note 10.11.2018
  */
-@ImplementedBy(JpaDao.class) 
+@ImplementedBy(JpaDao.class)
 public interface JpaDaoAPI {
-  
-  
+
+
   /**
    * Retourne la version courante de l'implémentation JpaDao.
    *
    * @return la version de l'implémentation JpaDao
    */
   String getVersion();
-  
+
   /**
-   * Set une connection. Permet d'utiliser ensuite les méthodes getEm() et getTr(). 
-   * 
+   * Set une connection. Permet d'utiliser ensuite les méthodes getEm() et getTr().
+   *
    * @param conn une connextion valide implépmentant les méthodes
    */
   void setConnection(Connectable conn);
-  
+
   /**
    * Retourne une référence sur l'objet "Connectable".
    *
    * @return une référence sur l'objet de connexion
    */
-  Connectable getConnection();  
-  
+  Connectable getConnection();
+
   /**
    * Détermine si une connexion existe avec un entity-manager valide.
-   * 
+   *
    * @return true si une connexioon valide a été trouvée
    */
    boolean isConnected();
-   
+
   /**
    * Se déconnecte au besoin si une connexion existe.
    */
   void disconnect();
-   
-  
+
+
   /**
    * Crée un objet avec les propriétés de la connexion. <br>
    * Attention, dans l'état actuel crée un objet pour JPA "EclipseLink".
@@ -67,12 +67,12 @@ public interface JpaDaoAPI {
    * @param dbDriver pilote JDBC
    * @param dbUrl URL vers la base de données
    * @param dbUser nom d'utlisateur de la base de données
-   * @param dbPsw mot de passe pour accéder à la base
+   * @param dbPwd mot de passe pour accéder à la base
    *
    * @return un objet de type "Properties"
    */
-   Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPsw );
-  
+   Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd);
+
   /**
    * Retourne le chemin absolu où se trouve la base de données.
    * Cela permet d'y stocker des photos ou autres informations
@@ -81,10 +81,10 @@ public interface JpaDaoAPI {
    * @param appPath le chemin vers l'application appelante
    * @return le chemin absolu vers la base de données
    */
-  String getConnectionPath(String appPath);    
+  String getConnectionPath(String appPath);
 
 
-  
+
 
   /**
    * Ajoute un objet dans la persistance.

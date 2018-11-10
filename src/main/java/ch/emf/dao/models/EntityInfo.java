@@ -270,7 +270,7 @@ public class EntityInfo {
     boolean nok;
 //    List<Field> fields = Arrays.asList(cl.getDeclaredFields());
     List<Field> fields = new ArrayList<>(Arrays.asList(cl.getDeclaredFields()));
-    	
+
     Iterator<Field> i = fields.iterator();
     while (i.hasNext()) {
       Field field = i.next();
@@ -279,8 +279,8 @@ public class EntityInfo {
       if (nok) {
         i.remove();
       }
-    }    
-    
+    }
+
 //    List<Integer> toRemoveList = new ArrayList<>();
 //    for (int i = 0; i < fields.size(); i++) {
 //      Field field = fields.get(i);
@@ -522,7 +522,7 @@ public class EntityInfo {
   public String toString() {
     return getEntityClass().getSimpleName()
             + ", " + getPkName()
-            + ", " + getPkType()
+            + ", " + getPkType().getTypeName()
             + ", " + isTableSeqUsed();
   }
 }
