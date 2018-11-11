@@ -1,20 +1,21 @@
 package tests;
 
-import ch.emf.dao.models.EntityInfo;
-import ch.emf.dao.transactions.Transaction;
-import ch.emf.dao.filtering.Search;
-import ch.emf.dao.filtering.Search2;
-import ch.emf.dao.JpaDao;
 import ch.emf.dao.JpaDaoAPI;
 import ch.emf.dao.conn.impl.ConnectWithPU;
 import ch.emf.dao.exceptions.JpaException;
+import ch.emf.dao.filtering.Search;
+import ch.emf.dao.filtering.Search2;
+import ch.emf.dao.models.EntityInfo;
+import ch.emf.dao.transactions.Transaction;
 import ch.jcsinfo.datetime.DateTimeLib;
 import ch.jcsinfo.file.FileHelper;
 import ch.jcsinfo.system.StackTracer;
 import ch.jcsinfo.util.ConvertLib;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import helpers.DbRebuilder;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import models.Activite;
@@ -24,17 +25,15 @@ import models.Conseiller;
 import models.EtatCivil;
 import models.Parti;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import helpers.DbRebuilder;
-import java.util.ArrayList;
 
 /**
  * Classe de test de la clasee JpaDao.
- * 
+ *
  * @author jcstritt
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -43,34 +42,34 @@ public class JpaDaoTest {
   private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
   private static final int LIST_MAXSIZE = 4; // le maximum d'entrées affichées pour les longues listes
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2017_11_27.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2018_11_10.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
-  
+
   private static JpaDaoAPI dao;
   private static int lastPk = -1;
-  
+
   private static EtatCivil EC = null;
   private static Parti PS = null;
   private static Canton FR = null;
   private static Conseil CF = null;
-  
-  private static List<Activite> activites;  
-  
-  
+
+  private static List<Activite> activites;
+
+
   /*
    * METHODES APPELEES AVANT ET APRES LES TESTS
    */
   @BeforeClass
   public static void setUpClass() {
-    
+
     // teste d'un injection avec Guice
     Injector inj = Guice.createInjector(new GuiceModule());
     dao = inj.getInstance(JpaDaoAPI.class);
     try {
       System.out.println(dao.getVersion());
       dao.setConnection(new ConnectWithPU("parlementPU"));
-      
+
       // si ok et s'il faut importer de nouvelles données
       if (IMPORT_DB) {
         int n1 = dao.executeScript(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + SCRIPT_DELETE_ALL));
@@ -78,19 +77,19 @@ public class JpaDaoTest {
         DbRebuilder fileWrk = new DbRebuilder(dao);
         fileWrk.importerDonneesFichier(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + FICHIER_CONSEILLERS));
       }
-    
+
     } catch (JpaException ex) {
       System.out.println(ex.getMessage());
     }
   }
-  
-  
+
+
   @AfterClass
   public static void tearDownClass() {
     dao.disconnect();
   }
-  
-  
+
+
   /*
    * METHODES PRIVEES
    */
@@ -107,9 +106,9 @@ public class JpaDaoTest {
     c.setParti(PS);
     c.setCanton(FR);
     return c;
-  }  
-  
-  
+  }
+
+
   /*
    * TESTS
    */
@@ -121,12 +120,12 @@ public class JpaDaoTest {
     // on affiche le résultat
     StackTracer.printTestResult("Connection: ", dao.getConnection(), "Connected", ok);
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test02_getSingleResult() {
     StackTracer.printCurrentTestMethod();
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -135,19 +134,19 @@ public class JpaDaoTest {
       FR = dao.getSingleResult(Canton.class, "abrev", "FR");
       CF = dao.getSingleResult(Conseil.class, "abrev", "CF");
       ok = EC != null && PS!=null && FR!=null && CF!=null;
-    }  
+    }
 
     // on affiche le résultat
-    StackTracer.printTestResult("EtatCivil", EC, "Parti", PS, "Canton", FR, "Conseil", CF);         
+    StackTracer.printTestResult("EtatCivil", EC, "Parti", PS, "Canton", FR, "Conseil", CF);
     assertTrue(ok);
   }
-  
+
   @Test
   public void test03_getSingleResult_with_Search() {
     StackTracer.printCurrentTestMethod();
     final String NOM_RECHERCHE = "Berset";
     Conseiller c = null;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -166,19 +165,19 @@ public class JpaDaoTest {
     // on affiche le résultat
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Result", c, "Attached", dao.isMerged(c));
     assertTrue(ok);
-  }    
+  }
 
   @Test
   public void test04_create() {
     StackTracer.printCurrentTestMethod();
     Conseiller c = getNewConseiller();
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
       ok = dao.create(c) == 1;
       lastPk = c.getPkConseiller();
-    }   
+    }
 
     // on affiche le résultat
     StackTracer.printTestResult("Conseiller", c, "PK", lastPk, "Attached", dao.isMerged(c));
@@ -189,13 +188,13 @@ public class JpaDaoTest {
   public void test05_read() {
     StackTracer.printCurrentTestMethod();
     Conseiller c = null;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
       c = dao.read(Conseiller.class, lastPk, false, true);
       ok = c != null;
-    }  
+    }
 
     // on affiche le résultat
     StackTracer.printTestResult("Conseiller", c, "PK", lastPk, "Attached", dao.isMerged(c));
@@ -206,7 +205,7 @@ public class JpaDaoTest {
   public void test06_update() {
     StackTracer.printCurrentTestMethod();
     Conseiller c = null;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -215,7 +214,7 @@ public class JpaDaoTest {
         c.setPrenom("Juliette");
         ok = dao.update(c) == 1;
       }
-    }  
+    }
     StackTracer.printTestResult("Conseiller", c, "PK", lastPk, "Attached", dao.isMerged(c));
     assertTrue(ok);
   }
@@ -224,28 +223,28 @@ public class JpaDaoTest {
   public void test07_delete() {
     StackTracer.printCurrentTestMethod();
     Conseiller c = null;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
       c = dao.read(Conseiller.class, lastPk, false, false);
       ok = dao.delete(Conseiller.class, lastPk) == 1;
-    }  
+    }
     StackTracer.printTestResult("Conseiller", c, "PK", lastPk, "Exist", dao.exists(Conseiller.class, lastPk));
     assertTrue(ok);
   }
-  
+
   @Test
   public void test08_count() {
     StackTracer.printCurrentTestMethod();
     long count = 0;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
       count = dao.count(Conseiller.class);
       ok = count > 0;
-    }  
+    }
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Result", count + " (all people)");
     assertTrue(ok);
   }
@@ -254,28 +253,28 @@ public class JpaDaoTest {
   public void test09_count() {
     StackTracer.printCurrentTestMethod();
     long count = 0;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
       count = dao.count(Conseiller.class, "actif", true);
       ok = count > 0;
-    }  
+    }
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Result", count + " (active people)");
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test10_getMinIntValue() {
     StackTracer.printCurrentTestMethod();
     int minInt = 0;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
       minInt = dao.getMinIntValue(Conseiller.class, "pkConseiller");
       ok = minInt > 0;
-    }  
+    }
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Result", minInt + " (PK min)");
     assertTrue(ok);
   }
@@ -290,11 +289,11 @@ public class JpaDaoTest {
     if (ok) {
       maxInt = dao.getMaxIntValue(Conseiller.class, "pkConseiller");
       ok = maxInt > 0;
-    }  
+    }
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Result", maxInt + " (PK max)");
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test12_getPkMax() {
     StackTracer.printCurrentTestMethod();
@@ -305,21 +304,21 @@ public class JpaDaoTest {
     if (ok) {
       pkMax = dao.getPkMax(Conseiller.class);
       ok = pkMax != null;
-    }  
-    
+    }
+
     // on affiche le résultat
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Result", pkMax);
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test13_getList() {
     StackTracer.printCurrentTestMethod();
     int nb = 0;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
-    if (ok) { 
+    if (ok) {
       // on appelle getList (sans filtrage)
       activites = dao.getList(Activite.class, "dateEntree");
       nb = activites.size();
@@ -341,7 +340,7 @@ public class JpaDaoTest {
   public void test14_getList() {
     StackTracer.printCurrentTestMethod();
     List<Conseiller> conseillers = new ArrayList<>();
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -360,12 +359,12 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
   public void test15_getList_with_Search() {
     StackTracer.printCurrentTestMethod();
     List<Conseiller> conseillers = new ArrayList<>();
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -387,7 +386,7 @@ public class JpaDaoTest {
       conseillers = dao.getList(s);
       ok = conseillers.size() > 0;
     }
-    
+
     // on affiche le résultat
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Nb", conseillers.size() + " (active people PS FR)");
     if (ok && SHOW_LIST) {
@@ -398,12 +397,12 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
   public void test16_getList_with_Search2() {
     StackTracer.printCurrentTestMethod();
     List<Conseiller> conseillers = new ArrayList<>();
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -433,12 +432,12 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
   public void test17_getList_with_Search2() {
     StackTracer.printCurrentTestMethod();
     List<Activite> activitesCF = new ArrayList<>();
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
@@ -518,7 +517,7 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
   public void test19_getAggregateList_with_Search() {
     StackTracer.printCurrentTestMethod();
@@ -538,7 +537,7 @@ public class JpaDaoTest {
       list = dao.getAggregateList(search);
       ok = list.size() > 0;
     }
-    
+
     // on affiche le résultat
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Nb", list.size()
       + " (political parties with more than 100 advisors since 1848)");
@@ -553,7 +552,7 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
   public void test20_getAggregateList_with_Search2() {
     StackTracer.printCurrentTestMethod();
@@ -590,7 +589,7 @@ public class JpaDaoTest {
     }
     assertTrue(ok);
   }
-  
+
   @Test
   public void test21_getList_with_native_sql() {
     StackTracer.printCurrentTestMethod();
@@ -608,11 +607,11 @@ public class JpaDaoTest {
       conseillers = dao.getList(sql, params, "ConseillerResult");
       ok = conseillers.size() > 0;
     }
-    
+
     // on affiche le résultat
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Nb", conseillers.size() + " (current advisors FR)");
     if (ok && SHOW_LIST) {
-      System.out.println(); 
+      System.out.println();
       for (Conseiller c : conseillers) {
         EtatCivil ec = dao.read(EtatCivil.class, c.getFkEtatCivilSQL(), false, true);
         Canton ct = dao.read(Canton.class, c.getFkCantonSQL(), false, true);
@@ -623,7 +622,7 @@ public class JpaDaoTest {
       }
     }
     assertTrue(ok);
-  }  
+  }
 
   @Test
   public void test22_executeCommand_with_native_sql() {
@@ -654,34 +653,34 @@ public class JpaDaoTest {
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Updated", n1 + n2);
     assertTrue(ok);
   }
-  
+
   @Test
   public void test23_deleteAll() {
     StackTracer.printCurrentTestMethod();
     int deleted = 0;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected() && activites != null;
-    if (ok) {   
+    if (ok) {
       long before = dao.count(Activite.class);
       deleted = dao.deleteAll(Activite.class);
       long after = dao.count(Activite.class);
       ok = ok && (deleted > 0) && (after == 0);
     }
-    
+
     // on affiche le résultat
     StackTracer.printTestResult("Class", Activite.class.getSimpleName(), "Deleted", deleted);
     assertTrue(ok);
   }
-  
+
   @Test
   public void test24_insertList() {
     StackTracer.printCurrentTestMethod();
     int added = 0;
-    
+
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
-    if (ok) {    
+    if (ok) {
       // on exécute d'abord une commande pour avoir l'autoincrément depuis 1
       int nb = dao.executeCommand("ALTER TABLE t_activite AUTO_INCREMENT=1");
 
@@ -689,12 +688,12 @@ public class JpaDaoTest {
       added = dao.insertList(Activite.class, activites, true);
       ok = nb >= 0 && added > 0;
     }
-    
+
     // on affiche le résultat
     StackTracer.printTestResult("Class", Activite.class.getSimpleName(), "Added", added);
     assertTrue(ok);
-  } 
-  
+  }
+
   @Test
   public void test25_updateList() {
     StackTracer.printCurrentTestMethod();
@@ -703,7 +702,7 @@ public class JpaDaoTest {
     // si une connexion valide est présente
     boolean ok = dao.isConnected();
     if (ok) {
-      
+
       // on modifie l'ensemble des partis
       List<Parti> partis = dao.getList(Parti.class, "nom");
       for (Parti parti : partis) {
@@ -724,11 +723,11 @@ public class JpaDaoTest {
       ok = ok && n1[0] > 0 & n2[0] > 0;
       updated = n2[0];
     }
-    
+
     StackTracer.printTestResult("Class", Parti.class.getSimpleName(), "Updated", updated);
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test26_rollbackManualTransaction() {
     StackTracer.printCurrentTestMethod();
@@ -777,7 +776,7 @@ public class JpaDaoTest {
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Before", before, "After", after);
     assertTrue(ok);
   }
-  
+
   @Test
   public void test27_getEntityInfo() {
     StackTracer.printCurrentTestMethod();
@@ -785,8 +784,8 @@ public class JpaDaoTest {
     boolean ok = ei != null;
     StackTracer.printTestResult("Class", Conseiller.class.getSimpleName(), "Info", ei);
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test28_getEntityFields() {
     StackTracer.printCurrentTestMethod();
@@ -807,8 +806,8 @@ public class JpaDaoTest {
       }
     }
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test29_getEntitiesMap() {
     StackTracer.printCurrentTestMethod();
@@ -824,8 +823,8 @@ public class JpaDaoTest {
       }
     }
     assertTrue(ok);
-  }  
-  
+  }
+
   @Test
   public void test30_disconnect() {
     StackTracer.printCurrentTestMethod();
@@ -835,8 +834,8 @@ public class JpaDaoTest {
       dao.disconnect();
       ok = !dao.isConnected();
     }
-    StackTracer.printTestResult("Disconnected", ok);      
+    StackTracer.printTestResult("Disconnected", ok);
     assertTrue(ok);
-  }    
-  
+  }
+
 }
