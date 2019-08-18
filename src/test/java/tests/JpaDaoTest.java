@@ -1,7 +1,6 @@
 package tests;
 
 import ch.emf.dao.JpaDaoAPI;
-import ch.emf.dao.conn.impl.ConnectWithPU;
 import ch.emf.dao.exceptions.JpaException;
 import ch.emf.dao.filtering.Search;
 import ch.emf.dao.filtering.Search2;
@@ -38,11 +37,11 @@ import org.junit.runners.MethodSorters;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JpaDaoTest {
-  private static final boolean IMPORT_DB = true; // importer la DB depuis le fichier csv (30-60s)
+  private static final boolean IMPORT_DB = false; // importer la DB depuis le fichier csv (30-60s)
   private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
   private static final int LIST_MAXSIZE = 4; // le maximum d'entrées affichées pour les longues listes
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2019_01_11.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2019_08_14.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
@@ -68,7 +67,7 @@ public class JpaDaoTest {
     dao = inj.getInstance(JpaDaoAPI.class);
     try {
       System.out.println(dao.getVersion());
-      dao.setConnection(new ConnectWithPU("parlementPU"));
+      dao.connect("parlementPU");
 
       // si ok et s'il faut importer de nouvelles données
       if (IMPORT_DB) {
@@ -118,7 +117,7 @@ public class JpaDaoTest {
     boolean ok = dao.isConnected();
 
     // on affiche le résultat
-    StackTracer.printTestResult("Connection: ", dao.getConnection(), "Connected", ok);
+    StackTracer.printTestResult("Connected: ", ok);
     assertTrue(ok);
   }
 
@@ -739,7 +738,7 @@ public class JpaDaoTest {
     if (ok) {
 
       // on récupère le gestionnaire de transactions et on démarre une transaction manuelle
-      Transaction tr = dao.getConnection().getTr();
+      Transaction tr = dao.getTransaction();
       tr.beginManualTransaction();
 
       // on lit le dernier conseiller et le dernier parti

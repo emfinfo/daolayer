@@ -1,15 +1,18 @@
 package ch.emf.dao;
 
-import ch.emf.dao.conn.Connectable;
+import ch.emf.dao.exceptions.JpaException;
 import ch.emf.dao.filtering.Search;
 import ch.emf.dao.filtering.Search2;
 import ch.emf.dao.models.EntityInfo;
+import ch.emf.dao.transactions.Transaction;
 import com.google.inject.ImplementedBy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
+import javax.persistence.EntityManager;
 
 /**
  * Interface définissant une série de services proposées lors d'une gestion
@@ -17,8 +20,8 @@ import java.util.Properties;
  *
  * @author Jean-Claude Stritt et Pierre-Alain Mettraux
  *
- * @note V6.0.1
- * @note 10.11.2018
+ * @note V6.1.0
+ * @note 14.8.2019
  *
  * @opt nodefillcolor palegreen
  * @opt all
@@ -26,53 +29,74 @@ import java.util.Properties;
 @ImplementedBy(JpaDao.class)
 public interface JpaDaoAPI {
 
-
   /**
    * Retourne la version courante de l'implémentation JpaDao.
    *
    * @return la version de l'implémentation JpaDao
    */
   String getVersion();
+  
+  
+  /**
+   * Retourne un objet représentant l'état d'une transaction actuelle
+   * sur l'entity manager.
+   * 
+   * @return la transaction courante
+   */
+  Transaction getTransaction();  
+
+
+ 
+  /**
+   * Connexion à une persistence unit JPA en surchargeant avec une série
+   * de propriétés spécifiées.
+   *
+   * @param pu un nom d'unité de persistence
+   * @param props des propriétés sous la forme clé-valeur (optionnel)
+   * @throws JpaException une exception à traiter en cas d'erreur
+   */
+  void connect(String pu, Optional<Properties> props) throws JpaException;
 
   /**
-   * Set une connection. Permet d'utiliser ensuite les méthodes getEm() et getTr().
+   * Connexion à une persistence unit JPA.
    *
-   * @param conn une connextion valide implépmentant les méthodes
+   * @param pu un nom d'unité de persistence
+   * @throws JpaException une exception à traiter en cas d'erreur
    */
-  void setConnection(Connectable conn);
-
+  void connect(String pu) throws JpaException;
+ 
   /**
-   * Retourne une référence sur l'objet "Connectable".
-   *
-   * @return une référence sur l'objet de connexion
+   * Mémorise l'entity manager provenant d'une couche supérieure.
+   * 
+   * @param em un objet EntityManager normalement ouvert !
    */
-  Connectable getConnection();
+  void setEntityManager(EntityManager em);
 
   /**
    * Détermine si une connexion existe avec un entity-manager valide.
    *
    * @return true si une connexioon valide a été trouvée
    */
-   boolean isConnected();
+  boolean isConnected();
 
   /**
-   * Se déconnecte au besoin si une connexion existe.
+   * Se déconnecte au besoin si un entity manager existe.
+   * Ne pas appeler si l'entity-manager est géré dans une couche supérieure.
    */
   void disconnect();
-
 
   /**
    * Crée un objet avec les propriétés de la connexion. <br>
    * Attention, dans l'état actuel crée un objet pour JPA "EclipseLink".
    *
    * @param dbDriver pilote JDBC
-   * @param dbUrl URL vers la base de données
-   * @param dbUser nom d'utlisateur de la base de données
-   * @param dbPwd mot de passe pour accéder à la base
+   * @param dbUrl    URL vers la base de données
+   * @param dbUser   nom d'utlisateur de la base de données
+   * @param dbPwd    mot de passe pour accéder à la base
    *
    * @return un objet de type "Properties"
    */
-   Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd);
+  Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd);
 
   /**
    * Retourne le chemin absolu où se trouve la base de données.
@@ -83,7 +107,6 @@ public interface JpaDaoAPI {
    * @return le chemin absolu vers la base de données
    */
   String getConnectionPath(String appPath);
-
 
 
 

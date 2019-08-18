@@ -1,6 +1,6 @@
 package ch.emf.dao;
 
-import ch.emf.dao.conn.Connectable;
+import ch.emf.dao.exceptions.JpaException;
 import ch.emf.dao.filtering.Search;
 import ch.emf.dao.filtering.Search2;
 import ch.emf.dao.helpers.Logger;
@@ -15,8 +15,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.metamodel.EntityType;
 
@@ -37,14 +39,16 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer V6.0.1 / 10.11.2018";
+  private final String DAOLAYER_VERSION = "DaoLayer V6.1.0 / 14.8.2019";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
+
   private final Class<?> clazz;
-  private Connectable conn;
+  private EntityManagerFactory emf;
+  private EntityManager em;
+  private Transaction tr;
   protected Map<Class<?>, EntityInfo> entitiesMap;
 
   public JpaDao() {
-    this.conn = null;
     this.clazz = this.getClass();
 
     // initialisé lors d'un "setConnection" pour mémoriser les infos sur les classes-entités
@@ -59,7 +63,7 @@ public class JpaDao implements JpaDaoAPI {
    */
   private void readEntities(EntityManager em) {
     if (em != null) {
-      Logger.info(clazz, em.getMetamodel().getEntities().size(), clazz.getSimpleName());
+      Logger.info(clazz, em.getMetamodel().getEntities().size());
       for (EntityType<?> entityType : em.getMetamodel().getEntities()) {
         EntityInfo ei = new EntityInfo(entityType.getBindableJavaType());
         Logger.debug(clazz, ei.toString());
@@ -79,7 +83,6 @@ public class JpaDao implements JpaDaoAPI {
     if (disp) {
       Logger.error(clazz, ex1.getMessage());
     }
-    Transaction tr = conn.getTr();
     try {
       if (tr.isAutoCommit()) {
         tr.rollback();
@@ -99,9 +102,9 @@ public class JpaDao implements JpaDaoAPI {
     if (ei.isTableSeqUsed()) {
       String sql = ei.buildUpdatePkMaxClause(pkMax);
       try {
-        Query query = conn.getEm().createNativeQuery(sql);
+        Query query = em.createNativeQuery(sql);
         query.executeUpdate();
-        conn.getTr().commit();
+        tr.commit();
       } catch (Exception ex1) {
         rollbackAfterError(ex1, true);
       }
@@ -120,7 +123,7 @@ public class JpaDao implements JpaDaoAPI {
   private Query getQuery(String jpql, Object[] params) {
     Query query = null;
     try {
-      query = conn.getEm().createQuery(jpql);
+      query = em.createQuery(jpql);
     } catch (Exception ex) {
       Logger.error(clazz, ex.getMessage());
     }
@@ -176,28 +179,74 @@ public class JpaDao implements JpaDaoAPI {
   public String getVersion() {
     return DAOLAYER_VERSION;
   }
-
+  
+    
   /**
-   * Set une connection. Permet d'utiliser ensuite les méthodes getEm() et getTr().
-   *
-   * @param conn une connextion valide implépmentant les méthodes
+   * Retourne un objet représentant l'état d'une transaction actuelle
+   * sur l'entity manager.
+   * 
+   * @return la transaction courante
    */
   @Override
-  public void setConnection(Connectable conn) {
-    this.conn = conn;
-    if (conn != null) {
-      readEntities(conn.getEm());
-    }
+  public Transaction getTransaction() {
+    return tr;
   }
-
+  
+  
+  
   /**
-   * Retourne une référence sur l'objet "Connectable".
+   * Connexion à une persistence unit JPA en surchargeant avec une série
+   * de propriétés spécifiées.
    *
-   * @return une référence sur l'objet de connexion
+   * @param pu un nom d'unité de persistence
+   * @param props des propriétés sous la forme clé-valeur (optionnel)
+   * @throws JpaException une exception à traiter en cas d'erreur
    */
   @Override
-  public Connectable getConnection() {
-    return conn;
+  public void connect(String pu, Optional<Properties> props) throws JpaException {
+    emf = null;
+    em = null;
+    tr = null;
+    try {
+      if (props.isPresent()) {
+        emf = Persistence.createEntityManagerFactory(pu, props.get());
+      } else {
+        emf = Persistence.createEntityManagerFactory(pu);      
+      }  
+      em = emf.createEntityManager();
+      tr = new Transaction(em.getTransaction());
+      readEntities(em);
+    } catch (Exception ex) {
+      throw new JpaException(clazz.getSimpleName(), "connect", ex.getMessage());
+    }
+  }    
+  
+  /**
+   * Connexion à une persistence unit JPA.
+   *
+   * @param pu un nom d'unité de persistence
+   * @throws JpaException une exception à traiter en cas d'erreur
+   */
+  @Override
+  public void connect(String pu) throws JpaException {
+    connect(pu, Optional.empty());
+  }  
+  
+  /**
+   * Mémorise l'entity manager provenant d'une couche supérieure.
+   * 
+   * @param em un objet EntityManager normalement ouvert !
+   */
+  @Override
+  public void setEntityManager(EntityManager em) {
+    this.emf = null;
+    this.em = em;
+    if (em != null) {
+      tr = new Transaction(em.getTransaction());
+      if (entitiesMap.isEmpty()) {
+        readEntities(em);
+      }  
+    }
   }
 
   /**
@@ -207,20 +256,26 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public boolean isConnected() {
-    return conn != null && conn.isConnected();
+    return (em != null) && em.isOpen();
   }
 
-
   /**
-   * Se déconnecte au besoin si une connexion existe.
+   * Se déconnecte au besoin si un entity manager existe.
+   * Ne pas appeler si l'entity-manager est géré dans une couche supérieure.
    */
   @Override
   public void disconnect() {
-    if (conn != null) {
-      conn.disconnect();
+    if (isConnected()) {
+      try {
+        em.close();
+        if (emf != null) {
+          emf.close();
+        }
+      } catch (Exception ex) {
+        Logger.error(clazz, ex.getMessage());
+      }
     }
   }
-
 
   /**
    * Crée un objet avec les propriétés de la connexion. <br>
@@ -255,7 +310,7 @@ public class JpaDao implements JpaDaoAPI {
   public String getConnectionPath(String appPath) {
 
     // retrouve le chemin relatif depuis le fichier de persistance JPA
-    String relPath = (String)conn.getEm().getProperties().get(JPA2_PREFIX_KEY + ".url");
+    String relPath = (String)em.getProperties().get(JPA2_PREFIX_KEY + ".url");
     int i = relPath.lastIndexOf(File.separatorChar);
     relPath = relPath.substring(0, i);
     i = relPath.lastIndexOf(":");
@@ -277,7 +332,6 @@ public class JpaDao implements JpaDaoAPI {
 
 
 
-
   /**
    * Ajoute un objet dans la persistance.
    *
@@ -289,8 +343,8 @@ public class JpaDao implements JpaDaoAPI {
   public <E> int create(E e) {
     int n = 0;
     try {
-      conn.getEm().persist(e);
-      conn.getTr().commit();
+      em.persist(e);
+      tr.commit();
       n = 1;
     } catch (Exception ex1) {
       rollbackAfterError(ex1, true);
@@ -315,7 +369,7 @@ public class JpaDao implements JpaDaoAPI {
   @SuppressWarnings("unchecked")
   public <E> E read(Class<?> cl, Object pk, boolean refresh, boolean detach) {
     try {
-      Object e = conn.getEm().find(cl, pk);
+      Object e = em.find(cl, pk);
       if (e != null) {
         if (refresh) {
           refresh(e);
@@ -342,8 +396,8 @@ public class JpaDao implements JpaDaoAPI {
   public <E> int update(E e) {
     int n = 0;
     try {
-      conn.getEm().merge(e);
-      conn.getTr().commit();
+      em.merge(e);
+      tr.commit();
       n = 1;
     } catch (OptimisticLockException ex1) {
       n = -1;
@@ -368,8 +422,8 @@ public class JpaDao implements JpaDaoAPI {
     int n = 0;
     Object e = read(cl, pk, false, false);
     try {
-      conn.getEm().remove(e);
-      conn.getTr().commit();
+      em.remove(e);
+      tr.commit();
       n = 1;
     } catch (OptimisticLockException ex1) {
       n = -1;
@@ -392,9 +446,9 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   @SuppressWarnings("unchecked")
   public boolean exists(Class<?> cl, Object pk) {
-    boolean ok = conn != null && conn.getEm() != null;
+    boolean ok =  em != null;
     if (ok) {
-      Object e = conn.getEm().find(cl, pk);
+      Object e = em.find(cl, pk);
       ok = e != null;
     }
     return ok;
@@ -500,7 +554,6 @@ public class JpaDao implements JpaDaoAPI {
         list = query.getResultList();
 
         // détache la liste en démarrant une transaction bidon
-        Transaction tr = conn.getTr();
         tr.beginManualTransaction();
         tr.commitManualTransaction();
         tr.finishManualTransaction();
@@ -639,9 +692,9 @@ public class JpaDao implements JpaDaoAPI {
     Query query;
     try {
       if (rsMapping.isEmpty()) {
-        query = conn.getEm().createNativeQuery(sql);
+        query = em.createNativeQuery(sql);
       } else {
-        query = conn.getEm().createNativeQuery(sql, rsMapping);
+        query = em.createNativeQuery(sql, rsMapping);
       }
       if (query != null) {
         if (params != null && params.length > 0) {
@@ -655,7 +708,6 @@ public class JpaDao implements JpaDaoAPI {
         list = query.getResultList();
 
         // détache la liste en démarrant une transaction bidon
-        Transaction tr = conn.getTr();
         tr.beginManualTransaction();
         tr.commitManualTransaction();
         tr.finishManualTransaction();
@@ -733,11 +785,11 @@ public class JpaDao implements JpaDaoAPI {
   public int executeCommand(String sql) {
     int n = 0;
     try {
-      Query query = conn.getEm().createNativeQuery(sql);
+      Query query = em.createNativeQuery(sql);
       Logger.debug(clazz, sql);
       if (query != null) {
         n = query.executeUpdate();
-        conn.getTr().commit();
+        tr.commit();
       }
     } catch (Exception ex1) {
       n = 0;
@@ -767,11 +819,10 @@ public class JpaDao implements JpaDaoAPI {
       commands = ScriptHelper.readSqlScriptFile(sqlScriptFileName);
     }
     int n = 0;
-    Transaction tr = conn.getTr();
     try {
       tr.beginManualTransaction();
       for (String sql : commands) {
-        Query query = conn.getEm().createNativeQuery(sql);
+        Query query = em.createNativeQuery(sql);
         Logger.debug(clazz, sql);
         int how = query.executeUpdate();
 //        System.out.println(i + " " + sql + " how="+how);
@@ -799,10 +850,9 @@ public class JpaDao implements JpaDaoAPI {
   public int deleteAll(Class<?> cl) {
     int n = 0;
     EntityInfo ei = getEntityInfo(cl);
-    Transaction tr = conn.getTr();
     try {
       tr.beginManualTransaction();
-      Query query = conn.getEm().createQuery(ei.buildDeleteClause());
+      Query query = em.createQuery(ei.buildDeleteClause());
       n = query.executeUpdate();
       updatePkMax(ei, 0L);
       tr.commitManualTransaction();
@@ -830,12 +880,11 @@ public class JpaDao implements JpaDaoAPI {
     int n = 0;
     String sql;
     Query query;
-    Transaction tr = conn.getTr();
     try {
       tr.beginManualTransaction();
       for (String tableName : tables) {
         sql = "DELETE FROM " + tableName + " WHERE " + tenantName + "=" + tenantId;
-        query = conn.getEm().createNativeQuery(sql);
+        query = em.createNativeQuery(sql);
         n += query.executeUpdate();
       }
       tr.commitManualTransaction();
@@ -896,12 +945,11 @@ public class JpaDao implements JpaDaoAPI {
         i = i + j;
       }
     }
-    Transaction tr = conn.getTr();
     try {
       tr.beginManualTransaction();
       for (E e : list) {
-        conn.getEm().persist(e);
-        conn.getEm().flush(); // STT 5.1.2017
+        em.persist(e);
+        em.flush(); // STT 5.1.2017
       }
       updatePkMax(ei, getPkMax(ei));
       tr.commitManualTransaction();
@@ -929,18 +977,17 @@ public class JpaDao implements JpaDaoAPI {
     int n[] = new int[] {0, 0};
     EntityInfo ei = getEntityInfo(cl);
     Method m = ei.findMethod("getPk");
-    Transaction tr = conn.getTr();
     try {
       tr.beginManualTransaction();
       for (E e : list) {
         if (exists(cl, getPk(e, m))) {
-          conn.getEm().merge(e);
+          em.merge(e);
           n[0]++;
         } else {
-          conn.getEm().persist(e);
+          em.persist(e);
           n[1]++;
         }
-        conn.getEm().flush(); // STT 5.1.2017
+        em.flush(); // STT 5.1.2017
       }
       updatePkMax(ei, getPkMax(ei));
       tr.commitManualTransaction();
@@ -963,7 +1010,7 @@ public class JpaDao implements JpaDaoAPI {
   public <E> void detachList(List<E> list) {
     try {
       for (E e : list) {
-        conn.getEm().detach(e);
+        em.detach(e);
       }
     } catch (Exception ex1) {
     }
@@ -976,12 +1023,11 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public <E> void refreshList(List<E> list) {
-    Transaction tr = conn.getTr();
     try {
       tr.beginManualTransaction();
       for (int i = 0; i < list.size(); i++) {
-        list.set(i, conn.getEm().merge(list.get(i)));
-        conn.getEm().refresh(list.get(i));
+        list.set(i, em.merge(list.get(i)));
+        em.refresh(list.get(i));
       }
       tr.commitManualTransaction();
     } catch (Exception ex1) {
@@ -999,7 +1045,7 @@ public class JpaDao implements JpaDaoAPI {
   private long count(EntityInfo ei) {
     long l;
     try {
-      Query query = conn.getEm().createQuery(ei.buildCountClause());
+      Query query = em.createQuery(ei.buildCountClause());
       l = (Long) query.getSingleResult();
     } catch (Exception ex) {
       l = 0;
@@ -1138,7 +1184,7 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public void clearCache() {
-    conn.getEm().getEntityManagerFactory().getCache().evictAll();
+    em.getEntityManagerFactory().getCache().evictAll();
   }
 
   /**
@@ -1147,7 +1193,7 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public void clear() {
-    conn.getEm().clear();
+    em.clear();
   }
 
   /**
@@ -1158,8 +1204,8 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public <E> void refresh(E e) {
     try {
-      conn.getEm().refresh(e);
-      conn.getTr().commit();
+      em.refresh(e);
+      tr.commit();
     } catch (Exception ex1) {
       rollbackAfterError(ex1, true);
     }
@@ -1173,7 +1219,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public <E> void detach(E e) {
     try {
-      conn.getEm().detach(e);
+      em.detach(e);
     } catch (Exception ex1) {
       Logger.error(clazz, ex1.getMessage());
     }
@@ -1187,7 +1233,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public <E> void merge(E e) {
     try {
-      conn.getEm().merge(e);
+      em.merge(e);
     } catch (Exception ex1) {
       Logger.error(clazz, ex1.getMessage());
     }
@@ -1202,7 +1248,7 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public <E> boolean isMerged(E e) {
-    return e != null && conn != null && conn.getEm() != null && conn.getEm().contains(e);
+    return e != null && em != null && em.contains(e);
   }
 
   /**
@@ -1261,7 +1307,7 @@ public class JpaDao implements JpaDaoAPI {
   private Object getPkMax(EntityInfo ei) {
     Object pk = null;
     try {
-      Query query = conn.getEm().createQuery(ei.buildMaxClause(ei.getPkName()));
+      Query query = em.createQuery(ei.buildMaxClause(ei.getPkName()));
       pk = query.getSingleResult();
     } catch (Exception ex) {
       Logger.error(clazz, ex.getMessage());

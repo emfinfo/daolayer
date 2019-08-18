@@ -128,7 +128,7 @@ public class DbRebuilder {
     }
 
     System.out.println("  - ajout des activités dans la BD ...");
-    Transaction tr = dao.getConnection().getTr();
+    Transaction tr = dao.getTransaction();
     tr.beginManualTransaction();
     int i = 0;
     for (Conseiller c : conseillers) {

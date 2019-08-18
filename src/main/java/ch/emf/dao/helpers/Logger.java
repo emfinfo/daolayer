@@ -13,16 +13,14 @@ import org.slf4j.LoggerFactory;
  * @opt nodefillcolor LemonChiffon
  */
 public class Logger {
-
   private static final int LEVEL = -2;
-  private static final String SIMPLE_FORMAT = "{} -> {}";
 
   /**
    * Méthode privée pour récupérer le nom d'une méthode parente.
    *
    * @param level 0 = la méthode courante, -1 la méthode parente immédiate
    */
-  private static String getParentMethod( int level ) {
+  private static String getParentMethod(int level) {
     StackTraceElement e[] = Thread.currentThread().getStackTrace();
     StackTraceElement trace = e[2 - level];
     String s = trace.getMethodName();
@@ -30,41 +28,31 @@ public class Logger {
     if (t.length == 3) {
       s = t[1];
     }
-    return s;
-  }
-
-  /**
-   * Méthode privée pour récupérer le nom de la méthode courante de l'appelant.
-   */
-  private static String getCurrentMethod() {
-    return getParentMethod(LEVEL);
+    return (s.equalsIgnoreCase("null") ? "constructor" : s);
   }
 
   /**
    * Méthode privée générique pour afficher un message.
    *
-   * @param which 1=message d'info, 2=message de debug, 3=message d'erreur
-   * @param cl la classe
-   * @param msg le message à afficher
+   * @param which  1=message d'info, 2=message de debug, 3=message d'erreur
+   * @param cl     la classe
    * @param values les valeurs à afficher
    */
-  private static void display( int which, Class<?> cl, Object msg, Object... values ) {
-    String format = SIMPLE_FORMAT;
+  private static void display(int which, Class<?> cl, Object... values) {
+    String format = "{}";
     Object[] tab = new Object[2 + values.length];
-    tab[0] = Logger.getParentMethod(LEVEL);
-    tab[1] = msg;
+    tab[0] = cl.getSimpleName() + "." + Logger.getParentMethod(LEVEL);
     if (values.length > 0) {
-      format += " (";
+      format += " -> ";
       int i = 0;
       for (Object value : values) {
         format += "{}";
-        tab[i + 2] = value;
+        tab[i + 1] = value;
         i++;
         if (i < values.length) {
           format += ", ";
         }
       }
-      format += ")";
     }
     switch (which) {
       case 1:
@@ -79,67 +67,35 @@ public class Logger {
     }
   }
 
-  /**
-   * Méthode pour afficher un message d'information.
-   *
-   * @param cl la classe de l'appelant
-   * @param msg le message à afficher
-   */
-  public static void info( Class<?> cl, Object msg ) {
-    LoggerFactory.getLogger(cl).info(SIMPLE_FORMAT, getCurrentMethod(), msg);
-  }
 
   /**
    * Méthode pour afficher un message d'information.
    *
-   * @param cl la classe de l'appelant
-   * @param msg le message principal à afficher
+   * @param cl     la classe de l'appelant
    * @param values des valeurs supplémentaires à afficher
    */
-  public static void info( Class<?> cl, Object msg, Object... values ) {
-    display(1, cl, msg, values);
+  public static void info(Class<?> cl, Object... values) {
+    display(1, cl, values);
   }
 
   /**
    * Méthode pour afficher un message de deboguage.
    *
-   * @param cl la classe de l'appelant
-   * @param msg le message à afficher
-   */
-  public static void debug( Class<?> cl, Object msg ) {
-    LoggerFactory.getLogger(cl).debug(SIMPLE_FORMAT, getCurrentMethod(), msg);
-  }
-
-  /**
-   * Méthode pour afficher un message de deboguage.
-   *
-   * @param cl la classe de l'appelant
-   * @param msg le message principal à afficher
+   * @param cl     la classe de l'appelant
    * @param values des valeurs supplémentaires à afficher
    */
-  public static void debug( Class<?> cl, Object msg, Object... values ) {
-    display(2, cl, msg, values);
+  public static void debug(Class<?> cl, Object... values) {
+    display(2, cl, values);
   }
 
   /**
    * Méthode pour afficher un message d'erreur.
    *
-   * @param cl la classe de l'appelant
-   * @param msg le message à afficher
-   */
-  public static void error( Class<?> cl, Object msg ) {
-    LoggerFactory.getLogger(cl).error(SIMPLE_FORMAT, getCurrentMethod(), msg);
-  }
-
-  /**
-   * Méthode pour afficher un message d'erreur.
-   *
-   * @param cl la classe de l'appelant
-   * @param msg le message principal à afficher
+   * @param cl     la classe de l'appelant
    * @param values des valeurs supplémentaires à afficher
    */
-  public static void error( Class<?> cl, Object msg, Object... values ) {
-    display(3, cl, msg, values);
+  public static void error(Class<?> cl, Object... values) {
+    display(3, cl, values);
   }
 
 }
