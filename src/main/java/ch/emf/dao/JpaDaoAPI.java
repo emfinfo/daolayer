@@ -105,7 +105,7 @@ public interface JpaDaoAPI {
    */
   void setEntityManager(EntityManager em);
 
-    /**
+  /**
    * Retourne un objet représentant l'état d'une transaction actuelle
    * sur l'entity manager.
    * 
