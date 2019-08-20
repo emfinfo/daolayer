@@ -10,7 +10,7 @@ mvn test
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
-New in release 6.1.0 (14.08.2019) :
+New in release 6.1.0 (20.08.2019) :
 * Deleting the Interface Connectable and all his implementations (no more usable with Play 2.7.x) 
 * New standard methods to connect to a Persistence Unit (return to release 5 methods)
 * New method setEntityManager (return to release 5) for Framework that give us the EntityManager
