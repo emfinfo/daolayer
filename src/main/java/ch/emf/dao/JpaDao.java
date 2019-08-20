@@ -39,7 +39,7 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer V6.1.0 / 14.8.2019";
+  private final String DAOLAYER_VERSION = "DaoLayer V6.1.0 / 20.8.2019";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
 
   private final Class<?> clazz;
@@ -169,7 +169,6 @@ public class JpaDao implements JpaDaoAPI {
 
 
 
-
   /**
    * Retourne la version courante de cette couche d'intégration DAO-JPA.
    *
@@ -179,19 +178,7 @@ public class JpaDao implements JpaDaoAPI {
   public String getVersion() {
     return DAOLAYER_VERSION;
   }
-  
-    
-  /**
-   * Retourne un objet représentant l'état d'une transaction actuelle
-   * sur l'entity manager.
-   * 
-   * @return la transaction courante
-   */
-  @Override
-  public Transaction getTransaction() {
-    return tr;
-  }
-  
+
   
   
   /**
@@ -232,23 +219,6 @@ public class JpaDao implements JpaDaoAPI {
     connect(pu, Optional.empty());
   }  
   
-  /**
-   * Mémorise l'entity manager provenant d'une couche supérieure.
-   * 
-   * @param em un objet EntityManager normalement ouvert !
-   */
-  @Override
-  public void setEntityManager(EntityManager em) {
-    this.emf = null;
-    this.em = em;
-    if (em != null) {
-      tr = new Transaction(em.getTransaction());
-      if (entitiesMap.isEmpty()) {
-        readEntities(em);
-      }  
-    }
-  }
-
   /**
    * Détermine si une connexion existe avec un entity-manager valide.
    *
@@ -331,7 +301,45 @@ public class JpaDao implements JpaDaoAPI {
   }
 
 
+  /**
+   * Retourne l'entityManager stocké dans la couche dao.
+   * @return un objet EntityManager
+   */
+  @Override
+  public EntityManager getEntityManager() {
+    return em;
+  }  
+  
+  /**
+   * Mémorise l'entity manager provenant d'une couche supérieure.
+   * 
+   * @param em un objet EntityManager normalement ouvert !
+   */
+  @Override
+  public void setEntityManager(EntityManager em) {
+    this.emf = null;
+    this.em = em;
+    if (em != null) {
+      tr = new Transaction(em.getTransaction());
+      if (entitiesMap.isEmpty()) {
+        readEntities(em);
+      }  
+    }
+  }
+    
+  /**
+   * Retourne un objet représentant l'état d'une transaction actuelle
+   * sur l'entity manager mémorisé.
+   * 
+   * @return la transaction courante
+   */
+  @Override
+  public Transaction getTransaction() {
+    return tr;
+  }
 
+  
+  
   /**
    * Ajoute un objet dans la persistance.
    *
