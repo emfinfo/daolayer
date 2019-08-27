@@ -441,7 +441,7 @@ public class JpaDaoTest {
     boolean ok = dao.isConnected();
     if (ok) {
       // avec Search2, il faut donner la requête JPQL (avantage : jointure entre plusieurs entity beans possible)
-      String jpql = "SELECT distinct a FROM Activite a LEFT JOIN a.conseiller c WHERE a.conseiller=c";
+      String jpql = "SELECT DISTINCT a FROM Activite a LEFT JOIN a.conseiller c WHERE a.conseiller=c";
 
       // avec Search2, c'est des AND automatiquement entre les filtres
       Search2 search = new Search2(jpql);
@@ -562,17 +562,16 @@ public class JpaDaoTest {
     if (ok) {
 
       // avec Search2, il faut donner la base de la requête JPQL (avantage : jointure entre plusieurs classes-entités possible)
-      String jpql = "SELECT c.canton,count(a.pkActivite) FROM Activite a LEFT JOIN a.conseiller c WHERE a.conseiller=c";
-
+      String jpql = "SELECT c.canton, count(distinct c) FROM Activite a LEFT JOIN a.conseiller c WHERE a.conseiller=c";
+      
       // on prépare la requête (nb de conseillers fédéraux par canton)
       Search2 search = new Search2(jpql);
       search.addFilterEqual("a.conseil", CF);
       search.addGroupByField("c.canton");
-//    search.addHavingCondition("count(a.pkActivite) >= 4");
       search.addSortFields("c.canton.abrev");
 
       // on exécute la requête
-      list = dao.getAggregateList(search);
+      list = dao.getAggregateList(search);  
       ok = list.size() > 0;
     }
 
