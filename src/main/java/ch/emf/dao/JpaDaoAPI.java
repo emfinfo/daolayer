@@ -21,7 +21,7 @@ import javax.persistence.EntityManager;
  * @author Jean-Claude Stritt et Pierre-Alain Mettraux
  *
  * @note V6.1.1
- * @note 6.8.2019
+ * @note 6.9.2019
  *
  * @opt nodefillcolor palegreen
  * @opt all
