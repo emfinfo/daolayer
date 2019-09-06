@@ -1,4 +1,4 @@
-# daolayer 6.1.0 - august 2019
+# daolayer 6.1.1 - september 2019
 A dao layer over JPA. With this library, you work with objects and lists of objects. No sql. Select queries can be made with a Search or Search2 object.
 
 You can download and open this project in NetBeans 10.x. It's a Java 8 maven project. So, dependencies are loaded automaticly from maven central. There are some test classes where you can learn how to use this library.
@@ -10,11 +10,14 @@ mvn test
 Project documentation here :
 http://jcstritt.emf-informatique.ch/doc/daolayer<br>
 
+New in release 6.1.1 (06.09.2019) :
+* Update some dependencies (guice 4.2.2, eclipselink 2.7.4, lombok 1.18.8)
+
 New in release 6.1.0 (20.08.2019) :
-* Deleting the Interface Connectable and all his implementations (no more usable with Play 2.7.x) 
+* Deleting the Interface Connectable and all his implementations (no more usable with Play 2.7.x)
 * New standard methods to connect to a Persistence Unit (return to release 5 methods)
 * New method setEntityManager (return to release 5) for Framework that give us the EntityManager
-* No more getEm, getTr methods. 
+* No more getEm, getTr methods
 
 New in release 6.0.1 (10.11.2018) :
 * Small improvements for tests in Logger.java
