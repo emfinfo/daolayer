@@ -20,8 +20,8 @@ import javax.persistence.EntityManager;
  *
  * @author Jean-Claude Stritt et Pierre-Alain Mettraux
  *
- * @note V6.1.0
- * @note 20.8.2019
+ * @note V6.1.1
+ * @note 6.8.2019
  *
  * @opt nodefillcolor palegreen
  * @opt all
@@ -35,7 +35,7 @@ public interface JpaDaoAPI {
    * @return la version de l'implémentation JpaDao
    */
   String getVersion();
-  
+
   /**
    * Connexion à une persistence unit JPA en surchargeant avec une série
    * de propriétés spécifiées.
@@ -53,7 +53,7 @@ public interface JpaDaoAPI {
    * @throws JpaException une exception à traiter en cas d'erreur
    */
   void connect(String pu) throws JpaException;
- 
+
   /**
    * Détermine si une connexion existe avec un entity-manager valide.
    *
@@ -90,17 +90,17 @@ public interface JpaDaoAPI {
    */
   String getConnectionPath(String appPath);
 
-  
-  
+
+
   /**
    * Retourne l'entityManager stocké dans la couche dao.
    * @return un objet EntityManager
    */
   EntityManager getEntityManager();
-  
+
   /**
    * Mémorise l'entity manager provenant d'une couche supérieure.
-   * 
+   *
    * @param em un objet EntityManager normalement ouvert !
    */
   void setEntityManager(EntityManager em);
@@ -108,13 +108,13 @@ public interface JpaDaoAPI {
   /**
    * Retourne un objet représentant l'état d'une transaction actuelle
    * sur l'entity manager.
-   * 
+   *
    * @return la transaction courante
    */
-  Transaction getTransaction();  
-  
-  
-  
+  Transaction getTransaction();
+
+
+
   /**
    * Ajoute un objet dans la persistance.
    *

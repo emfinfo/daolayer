@@ -39,7 +39,7 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer V6.1.0 / 20.8.2019";
+  private final String DAOLAYER_VERSION = "DaoLayer V6.1.1 / 6.9.2019";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
 
   private final Class<?> clazz;
@@ -179,8 +179,8 @@ public class JpaDao implements JpaDaoAPI {
     return DAOLAYER_VERSION;
   }
 
-  
-  
+
+
   /**
    * Connexion à une persistence unit JPA en surchargeant avec une série
    * de propriétés spécifiées.
@@ -198,16 +198,16 @@ public class JpaDao implements JpaDaoAPI {
       if (props.isPresent()) {
         emf = Persistence.createEntityManagerFactory(pu, props.get());
       } else {
-        emf = Persistence.createEntityManagerFactory(pu);      
-      }  
+        emf = Persistence.createEntityManagerFactory(pu);
+      }
       em = emf.createEntityManager();
       tr = new Transaction(em.getTransaction());
       readEntities(em);
     } catch (Exception ex) {
       throw new JpaException(clazz.getSimpleName(), "connect", ex.getMessage());
     }
-  }    
-  
+  }
+
   /**
    * Connexion à une persistence unit JPA.
    *
@@ -217,8 +217,8 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public void connect(String pu) throws JpaException {
     connect(pu, Optional.empty());
-  }  
-  
+  }
+
   /**
    * Détermine si une connexion existe avec un entity-manager valide.
    *
@@ -308,11 +308,11 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public EntityManager getEntityManager() {
     return em;
-  }  
-  
+  }
+
   /**
    * Mémorise l'entity manager provenant d'une couche supérieure.
-   * 
+   *
    * @param em un objet EntityManager normalement ouvert !
    */
   @Override
@@ -323,14 +323,14 @@ public class JpaDao implements JpaDaoAPI {
       tr = new Transaction(em.getTransaction());
       if (entitiesMap.isEmpty()) {
         readEntities(em);
-      }  
+      }
     }
   }
-    
+
   /**
    * Retourne un objet représentant l'état d'une transaction actuelle
    * sur l'entity manager mémorisé.
-   * 
+   *
    * @return la transaction courante
    */
   @Override
@@ -338,8 +338,8 @@ public class JpaDao implements JpaDaoAPI {
     return tr;
   }
 
-  
-  
+
+
   /**
    * Ajoute un objet dans la persistance.
    *
