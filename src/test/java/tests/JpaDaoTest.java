@@ -41,7 +41,7 @@ public class JpaDaoTest {
   private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
   private static final int LIST_MAXSIZE = 4; // le maximum d'entrées affichées pour les longues listes
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2019_08_14.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2019_11_28.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
@@ -563,7 +563,7 @@ public class JpaDaoTest {
 
       // avec Search2, il faut donner la base de la requête JPQL (avantage : jointure entre plusieurs classes-entités possible)
       String jpql = "SELECT c.canton, count(distinct c) FROM Activite a LEFT JOIN a.conseiller c WHERE a.conseiller=c";
-      
+
       // on prépare la requête (nb de conseillers fédéraux par canton)
       Search2 search = new Search2(jpql);
       search.addFilterEqual("a.conseil", CF);
@@ -571,7 +571,7 @@ public class JpaDaoTest {
       search.addSortFields("c.canton.abrev");
 
       // on exécute la requête
-      list = dao.getAggregateList(search);  
+      list = dao.getAggregateList(search);
       ok = list.size() > 0;
     }
 

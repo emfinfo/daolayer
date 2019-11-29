@@ -1,8 +1,8 @@
 package helpers;
 
-import ch.emf.dao.transactions.Transaction;
-import ch.emf.dao.filtering.Search;
 import ch.emf.dao.JpaDaoAPI;
+import ch.emf.dao.filtering.Search;
+import ch.emf.dao.transactions.Transaction;
 import ch.jcsinfo.file.TextFileReader;
 import com.google.inject.Inject;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import models.Parti;
 /**
  * Classe pour reconstituer la base de données des conseillers
  * d'après un fichier csv.
- * 
+ *
  * @author jcstritt
  */
 public class DbRebuilder {
@@ -55,7 +55,6 @@ public class DbRebuilder {
 
     // on remplit les hashmap
     for (Conseiller c : conseillers) {
-//      System.out.println(c);
       mapEtatsCivils.put(c.getEtatCivil().getAbrev(), c.getEtatCivil());
       mapCantons.put(c.getCanton().getAbrev(), c.getCanton());
       mapPartis.put(c.getParti().getAbrev(), c.getParti());
@@ -69,6 +68,12 @@ public class DbRebuilder {
       } else if (c.isActif() != c2.isActif()) {
         c2.setActif(c2.isActif() || c.isActif());
         mapConseillers.replace(c.getKey(), c2);
+      }
+
+      // traitement spécial si plusieurs citoyennetés (on prend la 1ère)
+      String t[] = c.getCitoyennete().split(",");
+      if (t.length > 0) {
+        c.setCitoyennete(t[0]);
       }
     }
 
@@ -142,7 +147,7 @@ public class DbRebuilder {
       tr.commitManualTransaction();
     } catch (Exception ex) {
     }
-    tr.finishManualTransaction();    
+    tr.finishManualTransaction();
     System.out.println("Fin de la reconstitution de la BD ... " + n[6]);
 
     // résultat
@@ -165,6 +170,6 @@ public class DbRebuilder {
       n = dao.create(activite);
     }
     return n;
-  }  
-  
+  }
+
 }
