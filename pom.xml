@@ -262,16 +262,16 @@
       <id>STT</id>
       <name>Jean-Claude Stritt</name>
       <email>jcsinfo@hispeed.ch</email>
-      <url>http://www.jcsinfo.ch/</url>
+      <url>https://www.jcsinfo.ch/</url>
       <organization>JCSINFO</organization>
-      <organizationUrl>http://www.jcsinfo.ch</organizationUrl>
+      <organizationUrl>https://www.jcsinfo.ch</organizationUrl>
       <roles>
         <role>engineer</role>
         <role>developer</role>
       </roles>
       <timezone>Europe/Switzerland</timezone>
       <properties>
-        <picUrl>http://www.jcsinfo.ch/pic/jcs01-square.jpg</picUrl>
+        <picUrl>https://www.jcsinfo.ch/pic/jcs01-square.jpg</picUrl>
       </properties>
     </developer>
 
@@ -288,7 +288,7 @@
       </roles>
       <timezone>Europe/Switzerland</timezone>
       <properties>
-        <picUrl>http://www.jcsinfo.ch/pic/pam01-square.jpg</picUrl>
+        <picUrl>https://www.jcsinfo.ch/pic/pam01-square.jpg</picUrl>
       </properties>
     </developer>
 
