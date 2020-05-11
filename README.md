@@ -8,7 +8,7 @@ In MacOS terminal or Windows console, you can start the "test" suite with a Mave
 mvn test
 
 Project documentation here :
-http://www.jcsinfo.ch/doc/daolayer<br>
+https://www.jcsinfo.ch/doc/daolayer<br>
 
 New in release 6.1.1 (06.09.2019) :
 * Update some dependencies (guice 4.2.2, eclipselink 2.7.4, lombok 1.18.8)
