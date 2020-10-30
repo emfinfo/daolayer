@@ -10,7 +10,7 @@ mvn test
 Project documentation here :
 https://www.jcsinfo.ch/doc/daolayer<br>
 
-New in release 6.1.3 (30.10.2020) : 
+New in release 6.1.3 (30.10.2020) :
 * Update some dependencies (junit 4.13.1, basiclib 1.5.2, mysql connector 5.1.49)
 * deleting of JpaNoTransaction annotation (no more use)
 

@@ -56,7 +56,7 @@ public class Transaction {
 
   private EntityTransaction et;
   private UserTransaction ut;
-  private boolean autoCommit;
+  private boolean autoCommit; 
 
   public Transaction(EntityTransaction et) {
     this.et = et;

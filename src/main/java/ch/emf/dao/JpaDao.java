@@ -49,7 +49,7 @@ public class JpaDao implements JpaDaoAPI {
   protected Map<Class<?>, EntityInfo> entitiesMap;
 
   public JpaDao() {
-    this.clazz = this.getClass();
+    this.clazz = this.getClass(); 
 
     // initialisé lors d'un "setConnection" pour mémoriser les infos sur les classes-entités
     entitiesMap = new HashMap<>();

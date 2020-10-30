@@ -59,13 +59,13 @@ public interface JpaDaoAPI {
    *
    * @return true si une connexioon valide a été trouvée
    */
-  boolean isConnected();
+  boolean isConnected(); 
 
   /**
    * Se déconnecte au besoin si un entity manager existe.
    * Ne pas appeler si l'entity-manager est géré dans une couche supérieure.
    */
-  void disconnect();
+  void disconnect(); 
 
   /**
    * Crée un objet avec les propriétés de la connexion. <br>
