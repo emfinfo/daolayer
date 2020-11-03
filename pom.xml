@@ -179,7 +179,7 @@
     </plugins>
   </build>
 
-  <!-- "mvn site" report -->
+  <!-- HTML reporting with "mvn site" -->
   <reporting>
     <plugins>
       
