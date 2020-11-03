@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <!-- project information -->
+  <name>DaoLayer</name>
+  <description>A dao layer that use JPA managed objects from a database.</description>
+  <url>https://github.com/emfinfo/daolayer</url>
 
-  <!-- the basics -->
+  <!-- project build information -->
   <groupId>ch.emf.info</groupId>
   <artifactId>daolayer</artifactId>
   <version>6.1.3</version>  
@@ -34,7 +39,6 @@
   <!-- dependencies -->
   <dependencies>
 
-    <!-- dependencies for compile time -->
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
@@ -59,7 +63,6 @@
       <version>1.7.30</version> <!-- dec 2019 -->
     </dependency>
     
-    <!-- dependencies for tests -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -90,7 +93,7 @@
 
   </dependencies>
 
-  <!-- build settings -->
+  <!-- build plugins -->
   <build>
     <plugins>
 
@@ -166,14 +169,6 @@
           </fileSets>
         </configuration>
       </plugin>
-      
-      <plugin>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-        </configuration>        
-      </plugin> 
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -187,6 +182,7 @@
   <!-- "mvn site" report -->
   <reporting>
     <plugins>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>        
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -245,27 +241,33 @@
           <additionalparam>-quiet -views -all</additionalparam>
         </configuration>
       </plugin>
+      
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+          <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
+        </configuration>        
+      </plugin>       
+      
     </plugins>
   </reporting>
 
-  <!-- project information details -->
-  <name>DaoLayer</name>
-  <description>A dao layer to use JPA managed objects from a database.</description>
-
+  <!-- licenses -->
   <licenses>
     <license>
       <name>MIT License</name>
       <url>http://www.opensource.org/licenses/MIT</url>
     </license>
   </licenses>
-  <url>https://github.com/emfinfo/daolayer</url>
 
+  <!-- developers -->
   <developers>
     <developer>
       <id>STT</id>
       <name>Jean-Claude Stritt</name>
       <email>jcsinfo@hispeed.ch</email>
-      <url>https://www.jcsinfo.ch/</url>
       <organization>JCSINFO</organization>
       <organizationUrl>https://www.jcsinfo.ch</organizationUrl>
       <roles>
@@ -282,7 +284,6 @@
       <id>PAM</id>
       <name>Pierre-Alain Mettraux</name>
       <email>mettrauxpa@edufr.ch</email>
-      <url>http://www.mettraux.ch//</url>
       <organization>EMF</organization>
       <organizationUrl>http://www.emf.ch</organizationUrl>
       <roles>
