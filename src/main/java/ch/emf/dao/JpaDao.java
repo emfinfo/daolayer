@@ -39,7 +39,7 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer 6.1.3 / 30.10.2020";
+  private final String DAOLAYER_VERSION = "DaoLayer 6.1.4 / 27.1.2021";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
 
   private final Class<?> clazz;
@@ -532,9 +532,9 @@ public class JpaDao implements JpaDaoAPI {
     Query query = getQuery(search);
     return getSingleResult(query);
   }
+  
 
-
-
+  
 
   /**
    * Méthode privée de plus bas niveau pour récupérer une liste d'objets
@@ -1044,6 +1044,45 @@ public class JpaDao implements JpaDaoAPI {
       tr.finishManualTransaction();
     }
   }
+  
+  
+  
+  
+ /**
+   * Retourne une valeur entière unique de type Integer grâce à une requête de type Search.<br>
+   * <br>
+   * Exemple :<br>
+   *   Search s = new Search(BonLivraisonTemp.class);<br>
+   *   s.addFilterLessThan("code", 1000);<br>
+   *   s.addFields("max(code)");<br>
+   *
+   * @param search un objet permettant le filtrage et le tri des données
+   *
+   * @return la valeur entière trouvée pour le filtrage spécifié
+   */
+  @Override
+  public int getIntValue(Search search) {
+    Integer value = (Integer)getSingleResult(search);
+    return (value == null) ? 0 : value.intValue(); 
+  }  
+  
+  /**
+   * Retourne une valeur entière unique de type Long grâce à une requête de type Search.<br>
+   * <br>
+   * Exemple :<br>
+   *   Search s = new Search(BonLivraisonTemp.class);<br>
+   *   s.addFilterLessThan("code", 1000);<br>
+   *   s.addFields("max(code)");<br>
+   *
+   * @param search un objet permettant le filtrage et le tri des données
+   *
+   * @return la valeur entière trouvée pour le filtrage spécifié
+   */
+  @Override
+  public long getLongValue(Search search) {
+    Long value = (Long)getSingleResult(search);
+    return (value == null) ? 0 : value.longValue();     
+  }      
 
   /*
    * Méthode privée pour retrouver le nb d'objets d'après l'objet entity-info
@@ -1051,15 +1090,9 @@ public class JpaDao implements JpaDaoAPI {
    * @return le nombre total d'objets pour l'entité
    */
   private long count(EntityInfo ei) {
-    long l;
-    try {
-      Query query = em.createQuery(ei.buildCountClause());
-      l = (Long) query.getSingleResult();
-    } catch (Exception ex) {
-      l = 0;
-      Logger.error(clazz, ex.getMessage(), ei.buildCountClause());
-    }
-    return l;
+    Query query = em.createQuery(ei.buildCountClause());
+    Long value = getSingleResult(query);
+    return (value == null) ? 0 : value.longValue();     
   }
 
   /**
@@ -1073,18 +1106,6 @@ public class JpaDao implements JpaDaoAPI {
   public long count(Class<?> cl) {
     EntityInfo ei = getEntityInfo(cl);
     return count(ei);
-  }
-
-
-  /**
-   * Méthode privée pour récupérer une seule valeur (typiquement pour count, max, min).
-   *
-   * @param search un objet de recherche (limitée à du filtrage)
-   *
-   * @return un objet avec une valeur numérique
-   */
-  private Object getSingleValue(Search search ) {
-    return getQuery(search).getSingleResult();
   }
 
   /**
@@ -1102,7 +1123,7 @@ public class JpaDao implements JpaDaoAPI {
     Search s = new Search(cl);
     s.addField("count(*)");
     s.addFilterEqual(attr, value);
-    return (Long)getSingleValue(s);
+    return getLongValue(s);
   }
 
   /**
@@ -1118,7 +1139,7 @@ public class JpaDao implements JpaDaoAPI {
     Search s = new Search(search.getEntity());
     s.addField("count(*)");
     s.setFilters(search.getFilters());
-    return (Long)getSingleValue(s);
+    return getLongValue(s);
   }
 
   /**
@@ -1134,12 +1155,7 @@ public class JpaDao implements JpaDaoAPI {
   public int getMinIntValue(Class<?> cl, String fieldName) {
     Search s = new Search(cl);
     s.addFields("min(" + fieldName + ")");
-    Object obj = getSingleValue(s);
-    try {
-      return (Integer)obj;
-    } catch (Exception e) {
-      return Integer.parseInt((String)obj);
-    }
+    return getIntValue(s);
   }
 
   /**
@@ -1155,32 +1171,7 @@ public class JpaDao implements JpaDaoAPI {
   public int getMaxIntValue(Class<?> cl, String fieldName) {
     Search s = new Search(cl);
     s.addFields("max(" + fieldName + ")");
-    Object obj = getSingleValue(s);
-    try {
-      return (Integer)obj;
-    } catch (Exception e) {
-      return Integer.parseInt((String)obj);
-    }
-  }
-
-  /**
-   * On peut faire la même chose que les deux précédentes méthodes
-   * getMinIntValue et getMaxIntValue, mais c'est à l'utilisateur de préparer
-   * la requête avec la classe Search. Cela permet de trouver par exemple
-   * un nombre maximale en dessous d'une limite (1000 par exemple).<br>
-   * <br>
-   * Exemple :<br>
-   *   Search s = new Search(BonLivraisonTemp.class);<br>
-   *   s.addFilterLessThan("code", 1000);<br>
-   *   s.addFields("max(code)");<br>
-   *
-   * @param search un objet permettant le filtrage et le tri des données
-   *
-   * @return la valeur entière trouvée pour le filtrage spécifié
-   */
-  @Override
-  public int getIntValue(Search search) {
-    return (Integer)getSingleValue(search);
+    return getIntValue(s);
   }
 
 

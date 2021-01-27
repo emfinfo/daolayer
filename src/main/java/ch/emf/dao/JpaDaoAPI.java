@@ -20,8 +20,8 @@ import javax.persistence.EntityManager;
  *
  * @author Jean-Claude Stritt et Pierre-Alain Mettraux
  *
- * @note 6.1.3
- * @note 30.10.2020
+ * @note 6.1.4
+ * @note 27.1.2021
  *
  * @opt nodefillcolor palegreen
  * @opt all
@@ -422,7 +422,34 @@ public interface JpaDaoAPI {
 
 
 
-
+  /**
+   * Retourne une valeur entière unique de type Integer grâce à une requête de type Search.<br>
+   * <br>
+   * Exemple :<br>
+   *   Search s = new Search(BonLivraisonTemp.class);<br>
+   *   s.addFilterLessThan("code", 1000);<br>
+   *   s.addFields("max(code)");<br>
+   *
+   * @param search un objet permettant le filtrage et le tri des données
+   *
+   * @return la valeur entière trouvée pour le filtrage spécifié
+   */
+  int getIntValue(Search search);
+  
+/**
+   * Retourne une valeur entière unique de type Long grâce à une requête de type Search.<br>
+   * <br>
+   * Exemple :<br>
+   *   Search s = new Search(BonLivraisonTemp.class);<br>
+   *   s.addFilterLessThan("code", 1000);<br>
+   *   s.addFields("max(code)");<br>
+   *
+   * @param search un objet permettant le filtrage et le tri des données
+   *
+   * @return la valeur entière trouvée pour le filtrage spécifié
+   */
+  long getLongValue(Search search); 
+  
   /**
    * Pour la classe-entité spécifiée, retourne le nombre total d'objets.
    *
@@ -444,7 +471,7 @@ public interface JpaDaoAPI {
    */
   long count(Class<?> cl, String attr, Object value);
 
-/**
+  /**
    * D'après la requête définie par un objet search, trouve le nombre
    * d'éléments.
    *
@@ -475,23 +502,6 @@ public interface JpaDaoAPI {
    * @return la valeur maximale entière pour le champ spécifié
    */
   int getMaxIntValue(Class<?> cl, String fieldName);
-
-  /**
-   * On peut faire la même chose que les deux précédentes méthodes
-   * getMinIntValue et getMaxIntValue, mais c'est à l'utilisateur de préparer
-   * la requête avec la classe Search. Cela permet de trouver par exemple
-   * un nombre maximale en dessous d'une limite (1000 par exemple).<br>
-   * <br>
-   * Exemple :<br>
-   *   Search s = new Search(BonLivraisonTemp.class);<br>
-   *   s.addFilterLessThan("code", 1000);<br>
-   *   s.addFields("max(code)");<br>
-   *
-   * @param search un objet permettant le filtrage et le tri des données
-   *
-   * @return la valeur entière trouvée pour le filtrage spécifié
-   */
-  int getIntValue(Search search);
 
 
 
