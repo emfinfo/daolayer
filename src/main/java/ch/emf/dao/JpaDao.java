@@ -39,7 +39,7 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer 6.1.4 / 27.1.2021";
+  private final String DAOLAYER_VERSION = "DaoLayer 6.1.5 / 1.7.2022";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
 
   private final Class<?> clazz;
@@ -125,7 +125,7 @@ public class JpaDao implements JpaDaoAPI {
     try {
       query = em.createQuery(jpql);
     } catch (Exception ex) {
-      Logger.error(clazz, ex.getMessage());
+      Logger.error(clazz, ex.getMessage(), jpql);
     }
     if (query != null && params != null && params.length > 0) {
       for (int i = 0; i < params.length; i++) {
@@ -1063,7 +1063,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public int getIntValue(Search search) {
     Integer value = (Integer)getSingleResult(search);
-    return (value == null) ? 0 : value.intValue(); 
+    return (value == null) ? 0 : value; 
   }  
   
   /**
@@ -1081,7 +1081,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public long getLongValue(Search search) {
     Long value = (Long)getSingleResult(search);
-    return (value == null) ? 0 : value.longValue();     
+    return (value == null) ? 0 : value;     
   }      
 
   /*
@@ -1092,7 +1092,7 @@ public class JpaDao implements JpaDaoAPI {
   private long count(EntityInfo ei) {
     Query query = em.createQuery(ei.buildCountClause());
     Long value = getSingleResult(query);
-    return (value == null) ? 0 : value.longValue();     
+    return (value == null) ? 0 : value;     
   }
 
   /**
@@ -1344,8 +1344,11 @@ public class JpaDao implements JpaDaoAPI {
    */
   @Override
   public EntityInfo getEntityInfo(Class<?> cl) {
-//    System.out.println("entitiesMap: " + entitiesMap.size());
-    return entitiesMap.get(cl);
+    EntityInfo ei = new EntityInfo(cl);
+    if (entitiesMap.size() > 0) {
+      ei = entitiesMap.get(cl);
+    }
+    return ei;
   }
 
   /**

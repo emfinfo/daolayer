@@ -1,4 +1,4 @@
-# daolayer 6.1.4 - january 2021
+# daolayer 6.1.5 - july 2022
 A dao layer over JPA. With this library, you work with objects and lists of objects. No sql. Select queries can be made with a Search or Search2 object.
 
 You can download and open this project in NetBeans 10.x. It's a Java 8 maven project. So, dependencies are loaded automaticly from maven central. There are some test classes where you can learn how to use this library.
@@ -9,6 +9,9 @@ mvn test
 
 Project documentation here :
 https://www.jcsinfo.ch/doc/daolayer<br>
+
+New in release 6.1.5 (1.07.2022) :
+* small change in getEntityInfo to avoid some of NullPointerException when db is closed
 
 New in release 6.1.4 (27.01.2021) :
 * correct a bug when JPA getSingleResult has no value
