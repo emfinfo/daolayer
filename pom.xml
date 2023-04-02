@@ -10,7 +10,7 @@
   <!-- project build information -->
   <groupId>ch.emf.info</groupId>
   <artifactId>daolayer</artifactId>
-  <version>6.1.5</version>  
+  <version>6.1.6</version>  
   <packaging>jar</packaging>
   
   <!-- maven project properties -->
