@@ -10,6 +10,12 @@ mvn test
 Project documentation here :
 https://www.jcsinfo.ch/doc/daolayer<br>
 
+New in release 6.1.7 (2.7.2023) :
+* adapted to BasicLib 1.5.5 
+
+New in release 6.1.6 (2.4.2023) :
+* adapted to BasicLib 1.5.4
+
 New in release 6.1.5 (1.07.2022) :
 * small change in getEntityInfo to avoid some of NullPointerException when db is closed
 

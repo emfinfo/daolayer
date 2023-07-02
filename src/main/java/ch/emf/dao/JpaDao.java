@@ -39,7 +39,7 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer 6.1.6 / 2.4.2023";
+  private final String DAOLAYER_VERSION = "DaoLayer 6.1.7 / 2.7.2023";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
 
   private final Class<?> clazz;
