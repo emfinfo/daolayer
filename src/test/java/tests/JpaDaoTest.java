@@ -345,7 +345,7 @@ public class JpaDaoTest {
     if (ok) {
       // on appelle getList avec un filtrage simplifié (un seul champ peut être filtré à la fois)
       conseillers = dao.getList(Conseiller.class, "actif", true, "nom,prenom");
-      ok = conseillers.size() > 0;
+      ok = !conseillers.isEmpty();
     }
 
     // on affiche le résultat
@@ -383,7 +383,7 @@ public class JpaDaoTest {
 
       // on exécute la requête avec getList
       conseillers = dao.getList(s);
-      ok = conseillers.size() > 0;
+      ok = !conseillers.isEmpty();
     }
 
     // on affiche le résultat
@@ -417,7 +417,7 @@ public class JpaDaoTest {
       conseillers = dao.getList(search);
 
       // on traite le résultat
-      ok = conseillers.size() > 0;
+      ok = !conseillers.isEmpty();
     }
 
     // on affiche le résultat
@@ -450,7 +450,7 @@ public class JpaDaoTest {
       search.addFilterIsNull("a.dateSortie");
       search.addSortFields("c.nom", "c.prenom");
       activitesCF = dao.getList(search);
-      ok = activitesCF.size() > 0;
+      ok = !activitesCF.isEmpty();
     }
 
     // on affiche le résultat
@@ -534,7 +534,7 @@ public class JpaDaoTest {
 
       // on exécute la requête
       list = dao.getAggregateList(search);
-      ok = list.size() > 0;
+      ok = !list.isEmpty();
     }
 
     // on affiche le résultat
@@ -572,7 +572,7 @@ public class JpaDaoTest {
 
       // on exécute la requête
       list = dao.getAggregateList(search);
-      ok = list.size() > 0;
+      ok = !list.isEmpty();
     }
 
     // on affiche le résultat
@@ -603,7 +603,7 @@ public class JpaDaoTest {
 
       // on exécute la requête
       conseillers = dao.getList(sql, params, "ConseillerResult");
-      ok = conseillers.size() > 0;
+      ok = !conseillers.isEmpty();
     }
 
     // on affiche le résultat
@@ -706,7 +706,7 @@ public class JpaDaoTest {
       for (Parti parti : partis) {
         parti.setNom(parti.getNom() + "_");
       }
-      ok = partis != null && partis.size() > 0;
+      ok = partis != null && !partis.isEmpty();
 
       // on exécute la mise à jour
       int n1[] = dao.updateList(Parti.class, partis);
@@ -792,7 +792,7 @@ public class JpaDaoTest {
     List<Field> list = dao.getEntityFields(Conseiller.class);
     boolean ok = false;
     int size = 0;
-    if (list != null && list.size() > 0) {
+    if (list != null && !list.isEmpty()) {
       ok = true;
       size = list.size();
     }
