@@ -41,7 +41,7 @@ public class JpaDaoTest {
   private static final boolean SHOW_LIST = true; // voir un extrait des listes extraites
   private static final int LIST_MAXSIZE = 4; // le maximum d'entrées affichées pour les longues listes
   private static final String CHEMIN_DONNEES = "data";
-  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2020_12_09.csv";
+  private static final String FICHIER_CONSEILLERS = "Ratsmitglieder_1848_FR_2025_03_17.csv";
   private static final String SCRIPT_DELETE_ALL = "db-delete-all.sql";
   private static final String SCRIPT_IMPORT_LOGINS = "db-import-logins.sql";
 
@@ -68,7 +68,9 @@ public class JpaDaoTest {
     try {
       System.out.println(dao.getVersion());
       dao.connect("parlementPU");
-
+      String url = dao.getConnectionURL();
+      System.out.println("DB: "+url);     
+      
       // si ok et s'il faut importer de nouvelles données
       if (IMPORT_DB) {
         int n1 = dao.executeScript(FileHelper.normalizeFileName(CHEMIN_DONNEES + "/" + SCRIPT_DELETE_ALL));

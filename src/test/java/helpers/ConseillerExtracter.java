@@ -36,21 +36,23 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
     String[] tab = line.split(sep);
     Conseiller cons = new Conseiller();
 
-    if (tab.length >= 19) {
+    if (tab.length >= 20) {
 
       // conseiller
       cons.setActif(tab[0].trim().equals("VRAI"));
       cons.setPrenom(tab[1].trim());
       cons.setNom(tab[2].trim());
       cons.setSexe(tab[3].trim());
-      cons.setLieuNaissance(tab[12].trim());
-      cons.setCantonNaissance(tab[13].trim());
-      cons.setMandats(tab[14].trim());
-      cons.setCitoyennete(tab[17].trim());
-      cons.setDateNaissance(DateTimeLib.parseIsoDate(tab[18]));
-      if (tab.length >= 20) {
-        cons.setDateDeces(DateTimeLib.parseIsoDate(tab[19]));
-      }
+      cons.setLieuNaissance(tab[13].trim());
+      cons.setCantonNaissance(tab[14].trim());
+      cons.setMandats(tab[15].trim());
+      cons.setCitoyennete(tab[18].trim());
+      cons.setDateNaissance(DateTimeLib.parseIsoDate(tab[19]));
+      if (tab.length >= 21) {
+        cons.setDateDeces(DateTimeLib.parseIsoDate(tab[20]));
+      } else {
+        cons.setDateDeces(null);
+      }  
 
       // canton
       Canton canton = new Canton();
@@ -82,6 +84,7 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
       Groupe groupe = new Groupe();
       groupe.setNom(tab[7].trim());
       groupe.setAbrev(tab[8].trim());
+      groupe.setAbrev(groupe.getAbrev().length() > 10 ? groupe.getAbrev().substring(0, 10) : groupe.getAbrev());
       if (groupe.getAbrev().isEmpty()) {
         groupe.setAbrev(INDEFINI_ABREV);
         groupe.setNom("Inconnu");
@@ -120,8 +123,8 @@ public class ConseillerExtracter implements BeanExtracter<Conseiller> {
 
       // activite
       Activite activite = new Activite();
-      activite.setDateEntree(DateTimeLib.parseIsoDate(tab[15]));
-      activite.setDateSortie(DateTimeLib.parseIsoDate(tab[16]));
+      activite.setDateEntree(DateTimeLib.parseIsoDate(tab[16]));
+      activite.setDateSortie(DateTimeLib.parseIsoDate(tab[17]));
       cons.setActivite(activite);
 
 //      System.out.println(cons.toString2());

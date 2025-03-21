@@ -392,7 +392,7 @@ public class Search2 {
   }
 
   /**
-   * Un tableau avec les valeurs à injecter comme parmètres dans la requête jpql en cours.
+   * Un tableau avec les valeurs à injecter comme paramètres dans la requête jpql en cours.
    *
    * @return un tableau de valeurs (Objects)
    */

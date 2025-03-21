@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Classe qui mémorise toutes les informations nécessaires à un filtrage de données.
- * Plusieurs filtres peuvent être définis, séparés par des filtres de type
+ * Plusieurs filtres peuvent être définis, séparés par des opérateurs de type
  * AND, OR ou NOT. L'ordre de tri (sort) peut aussi être fixé. On peut aussi
  * limiter le nombre d'enregistrements retourné (setMaxResults).<br>
  * <br>

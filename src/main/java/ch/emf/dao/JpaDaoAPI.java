@@ -20,8 +20,8 @@ import javax.persistence.EntityManager;
  *
  * @author Jean-Claude Stritt et Pierre-Alain Mettraux
  *
- * @note 6.1.7
- * @note 2.7.2023
+ * @note 6.1.8
+ * @note 21.3.2025
  *
  * @opt nodefillcolor palegreen
  * @opt all
@@ -78,7 +78,7 @@ public interface JpaDaoAPI {
    *
    * @return un objet de type "Properties"
    */
-  Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd);
+  Properties buildConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd);
 
   /**
    * Retourne le chemin absolu où se trouve la base de données.
@@ -88,10 +88,24 @@ public interface JpaDaoAPI {
    * @param appPath le chemin vers l'application appelante
    * @return le chemin absolu vers la base de données
    */
-  String getConnectionPath(String appPath);
+  String buildConnectionPath(String appPath);
 
+  /**
+   * Retourne une propriété de connexion mémorisée dans l'entity Manager Factory.
+   * 
+   * @param prop le nom de la propriété à extraire
+   * @return las valeur de cette propriété sous la form d'u String
+   */
+  public String getConnectionProperty(String prop);
 
-
+  /**
+   * Retourne d'une manière simplifiée l'URL qui accède à une BD.<br>
+   * Pour avoir l'URL complète, faire :<br>
+   * String url = dao.getConnectionProperty("javax.persistence.jdbc.url");
+   * 
+   * @return L'URL simpifiée
+   */
+  public String getConnectionURL();
   /**
    * Retourne l'entityManager stocké dans la couche dao.
    * @return un objet EntityManager

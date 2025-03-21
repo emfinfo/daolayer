@@ -39,7 +39,7 @@ import javax.persistence.metamodel.EntityType;
  */
 @Singleton
 public class JpaDao implements JpaDaoAPI {
-  private final String DAOLAYER_VERSION = "DaoLayer 6.1.7 / 2.7.2023";
+  private final String DAOLAYER_VERSION = "DaoLayer 6.1.8 / 21.3.2025";
   private final String JPA2_PREFIX_KEY = "javax.persistence.jdbc";
 
   private final Class<?> clazz;
@@ -229,6 +229,7 @@ public class JpaDao implements JpaDaoAPI {
     return (em != null) && em.isOpen();
   }
 
+
   /**
    * Se déconnecte au besoin si un entity manager existe.
    * Ne pas appeler si l'entity-manager est géré dans une couche supérieure.
@@ -259,7 +260,7 @@ public class JpaDao implements JpaDaoAPI {
    * @return un objet de type "Properties"
    */
   @Override
-  public Properties getConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd) {
+  public Properties buildConnectionProperties(String dbDriver, String dbUrl, String dbUser, String dbPwd) {
     Properties props = new Properties();
     props.put(JPA2_PREFIX_KEY + ".driver", dbDriver);
     props.put(JPA2_PREFIX_KEY + ".url", dbUrl);
@@ -267,7 +268,7 @@ public class JpaDao implements JpaDaoAPI {
     props.put(JPA2_PREFIX_KEY + ".password", dbPwd);
     return props;
   }
-
+  
   /**
    * Retourne le chemin absolu où se trouve la base de données.
    * Cela permet d'y stocker des photos ou autres informations
@@ -277,7 +278,7 @@ public class JpaDao implements JpaDaoAPI {
    * @return le chemin absolu vers la base de données
    */
   @Override
-  public String getConnectionPath(String appPath) {
+  public String buildConnectionPath(String appPath) {
 
     // retrouve le chemin relatif depuis le fichier de persistance JPA
     String relPath = (String)em.getProperties().get(JPA2_PREFIX_KEY + ".url");
@@ -299,10 +300,52 @@ public class JpaDao implements JpaDaoAPI {
     dbPath = dbPath + File.separatorChar + relPath + File.separatorChar;
     return dbPath;
   }
+  
+  /**
+   * Retourne une propriété de connexion mémorisée dans l'entity Manager Factory.
+   * 
+   * @param prop le nom de la propriété à extraire
+   * @return las valeur de cette propriété sous la form d'u String
+   */
+  @Override  
+  public String getConnectionProperty(String prop) {
+    String result = "";
+    if (emf != null) {
+      Map<String, Object> properties = emf.getProperties();
+      Object obj = properties.get(prop);
+      if (obj != null) {
+        result = obj.toString();
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * Retourne d'une manière simplifiée l'URL qui accède à une BD.<br>
+   * Pour avoir l'URL complète, faire :<br>
+   * <br>
+   * String url = dao.getConnectionProperty("javax.persistence.jdbc.url");
+   *
+   * @return L'URL simpifiée
+   */
+  @Override  
+  public String getConnectionURL() {
+    String url = getConnectionProperty(JPA2_PREFIX_KEY + ".url");
+    if (url.length() > 0) {
+      // jdbc:mysql://localhost:3306/parlement?allowPublicKeyRetrieval=true&useSSL=false   
+      int start = url.indexOf("//") + 2; // trouver "//" et avancer de 2 caractères
+      int end = url.indexOf("?", start); // trouver "?" après "//"
 
-
+      if (start > 1 && end > start) {
+        url = url.substring(start, end);
+      }
+    }
+    return url;
+  }  
+     
   /**
    * Retourne l'entityManager stocké dans la couche dao.
+   * 
    * @return un objet EntityManager
    */
   @Override
@@ -944,7 +987,7 @@ public class JpaDao implements JpaDaoAPI {
     int n = 0;
     EntityInfo ei = getEntityInfo(cl);
 //    Class type = ei.getEntityClass();
-    if (count(ei) == 0 && list.size() > 0 && resetPk) {
+    if (count(ei) == 0 && !list.isEmpty() && resetPk) {
       Method m = ei.findMethod("setPk");
       long i = ei.getPkInitialValue();
       long j = ei.getPkAllocationSize();
@@ -1261,7 +1304,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public <E> boolean isMerged(List<E> list) {
     boolean merged = false;
-    if (list != null && list.size() > 0) {
+    if (list != null && !list.isEmpty()) {
       merged = isMerged(list.get(0));
     }
     return merged;
@@ -1345,7 +1388,7 @@ public class JpaDao implements JpaDaoAPI {
   @Override
   public EntityInfo getEntityInfo(Class<?> cl) {
     EntityInfo ei = new EntityInfo(cl);
-    if (entitiesMap.size() > 0) {
+    if (!entitiesMap.isEmpty()) {
       ei = entitiesMap.get(cl);
     }
     return ei;
