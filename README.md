@@ -1,4 +1,4 @@
-# daolayer 6.1.7 - july 2023
+# daolayer 6.1.8 - march 2025
 A dao layer over JPA. With this library, you work with objects and lists of objects. No sql. Select queries can be made with a Search or Search2 object.
 
 You can download and open this project in NetBeans 10.x. It's a Java 8 maven project. So, dependencies are loaded automaticly from maven central. There are some test classes where you can learn how to use this library.
@@ -9,6 +9,12 @@ mvn test
 
 Project documentation here :
 https://www.jcsinfo.ch/doc/daolayer<br>
+
+New in release 6.1.8 (24.3.2025) :
+* change name of getConnectionProperties to buildConnectionProperties
+* change name of getConnectionPath to buildConnectionPath
+* add a getConnectionProperty to retrieve a property from persistence.xml 
+* add a getConnectionURL method to retrieve the URL of a DB connection URL
 
 New in release 6.1.7 (2.7.2023) :
 * adapted to BasicLib 1.5.5 
