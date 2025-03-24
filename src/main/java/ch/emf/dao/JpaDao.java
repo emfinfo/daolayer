@@ -333,7 +333,7 @@ public class JpaDao implements JpaDaoAPI {
     String url = getConnectionProperty(JPA2_PREFIX_KEY + ".url");
     if (url.length() > 0) {
       // jdbc:mysql://localhost:3306/parlement?allowPublicKeyRetrieval=true&useSSL=false   
-      int start = url.indexOf("//") + 2; // trouver "//" et avancer de 2 caractères
+      int start = url.indexOf("//"); // trouver "//" 
       int end = url.indexOf("?", start); // trouver "?" après "//"
 
       if (start > 1 && end > start) {
